@@ -28,6 +28,285 @@
     <meta name="theme-color" content="#8b5cf6">
     <title>AarogyaTech - AI Voice Assistant for Student Mental Health</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Enhanced Music Player Styles */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes musicWave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+        
+        /* Custom Range Slider Styling */
+        #musicVolume {
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(to right, #8b5cf6 0%, #8b5cf6 50%, rgba(139, 92, 246, 0.3) 50%, rgba(139, 92, 246, 0.3) 100%);
+            border-radius: 2px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        #musicVolume::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        #musicVolume::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 3px 8px rgba(139, 92, 246, 0.5);
+        }
+        
+        #musicVolume::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Music Player Hover Effects */
+        .music-player:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+            transition: all 0.3s ease;
+        }
+        
+        /* Responsive Design for Music Player */
+        @media (max-width: 768px) {
+            .music-player {
+                padding: 15px !important;
+            }
+            
+            .music-player > div:first-child {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .music-player > div:first-child > div:first-child {
+                margin-right: 0 !important;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Peer Support Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            max-width: 800px;
+            max-height: 90vh;
+            width: 90%;
+            overflow-y: auto;
+            color: #f3f4f6;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #c084fc;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #f3f4f6;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .post-category {
+            background: rgba(139, 92, 246, 0.2);
+            color: #c084fc;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .post-pinned {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .post-stats {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+
+        .replies-section {
+            margin-top: 30px;
+            border-top: 1px solid rgba(139, 92, 246, 0.3);
+            padding-top: 20px;
+        }
+
+        .replies-section h4 {
+            color: #c084fc;
+            margin-bottom: 15px;
+        }
+
+        .reply-form {
+            margin-bottom: 20px;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #f3f4f6;
+            resize: vertical;
+            margin-bottom: 10px;
+        }
+
+        .reply {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .reply-meta {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .reply-actions {
+            margin-top: 10px;
+        }
+
+        .support-btn.active {
+            background: rgba(139, 92, 246, 0.3);
+            color: #c084fc;
+        }
+
+        .forum-post {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .forum-post:hover {
+            border-color: rgba(139, 92, 246, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .forum-post h4 {
+            color: #c084fc;
+            margin-bottom: 10px;
+        }
+
+        .post-meta {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .post-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            align-items: center;
+        }
+
+        .support-btn, .reply-btn {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #c084fc;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .support-btn:hover, .reply-btn:hover {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: rgba(139, 92, 246, 0.5);
+        }
+
+        /* Responsive modal */
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+            
+            .modal-header, .modal-body {
+                padding: 15px;
+            }
+            
+            .post-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .support-btn, .reply-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -343,6 +622,8 @@
                     <p><span data-en="These screening tools are for educational purposes only and do not constitute professional medical advice, diagnosis, or treatment. Results should be discussed with a qualified healthcare provider. If you are experiencing a mental health crisis, please seek immediate professional help." data-mr="ही तपासणी साधने केवळ शैक्षणिक हेतूंसाठी आहेत आणि व्यावसायिक वैद्यकीय सल्ला, निदान किंवा उपचार नाहीत. परिणामांची चर्चा पात्र आरोग्यसेवा प्रदात्यासोबत केली पाहिजे. जर तुम्हाला मानसिक आरोग्य संकट येत असेल, तर कृपया तात्काळ व्यावसायिक मदत घ्या.">These screening tools are for educational purposes only and do not constitute professional medical advice, diagnosis, or treatment. Results should be discussed with a qualified healthcare provider. If you are experiencing a mental health crisis, please seek immediate professional help.</span></p>
                 </div>
                 
+
+                
                 <div class="screening-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="screening-card" onclick="showScreeningTool('phq9')" style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(139, 92, 246, 0.3); padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
                         <h3>📊 <span data-en="PHQ-9 Depression Screening" data-mr="PHQ-9 नैराश्य तपासणी">PHQ-9 Depression Screening</span></h3>
@@ -392,6 +673,27 @@
                 
                 <form id="phq9Form" class="screening-form">
                     <div id="phq9Questions"><!-- Questions will be populated by JavaScript --></div>
+                    
+                    <!-- User Description Field -->
+                    <div class="user-description-section" style="margin-top: 30px; padding: 20px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px;">
+                        <h4 style="color: #6366f1; margin-bottom: 15px;">💭 <span data-en="Additional Information (Optional)" data-mr="अतिरिक्त माहिती (ऐच्छिक)">Additional Information (Optional)</span></h4>
+                        <p style="color: #9ca3af; margin-bottom: 15px; font-size: 14px;">
+                            <span data-en="Please describe any additional concerns, symptoms, or context you'd like to share about your mental health. This information will help provide more personalized recommendations." 
+                                  data-mr="कृपया तुमच्या मानसिक आरोग्याबद्दल तुम्हाला सामायिक करायच्या कोणत्याही अतिरिक्त चिंता, लक्षणे किंवा संदर्भाचे वर्णन करा. ही माहिती अधिक वैयक्तिकृत शिफारसी देण्यास मदत करेल.">
+                                Please describe any additional concerns, symptoms, or context you'd like to share about your mental health. This information will help provide more personalized recommendations.
+                            </span>
+                        </p>
+                        <textarea id="phq9UserDescription" 
+                                  placeholder="Share your thoughts, concerns, or any additional context..." 
+                                  data-placeholder-en="Share your thoughts, concerns, or any additional context..."
+                                  data-placeholder-mr="तुमचे विचार, चिंता किंवा कोणताही अतिरिक्त संदर्भ सामायिक करा..."
+                                  style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; background: rgba(30, 41, 59, 0.5); color: #f3f4f6; font-family: inherit; resize: vertical;"
+                                  maxlength="1000"></textarea>
+                        <div style="text-align: right; margin-top: 5px; font-size: 12px; color: #9ca3af;">
+                            <span id="phq9CharCount">0/1000</span>
+                        </div>
+                    </div>
+                    
                     <div class="form-actions" style="margin-top: 30px; text-align: center;">
                         <button type="button" onclick="calculatePHQ9Score()" class="submit-btn" style="margin-right: 15px;">
                             <span data-en="Calculate Results" data-mr="परिणाम काढा">Calculate Results</span>
@@ -417,6 +719,27 @@
                 
                 <form id="gad7Form" class="screening-form">
                     <div id="gad7Questions"><!-- Questions will be populated by JavaScript --></div>
+                    
+                    <!-- User Description Field -->
+                    <div class="user-description-section" style="margin-top: 30px; padding: 20px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px;">
+                        <h4 style="color: #6366f1; margin-bottom: 15px;">💭 <span data-en="Additional Information (Optional)" data-mr="अतिरिक्त माहिती (ऐच्छिक)">Additional Information (Optional)</span></h4>
+                        <p style="color: #9ca3af; margin-bottom: 15px; font-size: 14px;">
+                            <span data-en="Please describe any additional concerns, symptoms, or context you'd like to share about your anxiety or mental health. This information will help provide more personalized recommendations." 
+                                  data-mr="कृपया तुमच्या चिंता किंवा मानसिक आरोग्याबद्दल तुम्हाला सामायिक करायच्या कोणत्याही अतिरिक्त चिंता, लक्षणे किंवा संदर्भाचे वर्णन करा. ही माहिती अधिक वैयक्तिकृत शिफारसी देण्यास मदत करेल.">
+                                Please describe any additional concerns, symptoms, or context you'd like to share about your anxiety or mental health. This information will help provide more personalized recommendations.
+                            </span>
+                        </p>
+                        <textarea id="gad7UserDescription" 
+                                  placeholder="Share your thoughts, concerns, or any additional context..." 
+                                  data-placeholder-en="Share your thoughts, concerns, or any additional context..."
+                                  data-placeholder-mr="तुमचे विचार, चिंता किंवा कोणताही अतिरिक्त संदर्भ सामायिक करा..."
+                                  style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; background: rgba(30, 41, 59, 0.5); color: #f3f4f6; font-family: inherit; resize: vertical;"
+                                  maxlength="1000"></textarea>
+                        <div style="text-align: right; margin-top: 5px; font-size: 12px; color: #9ca3af;">
+                            <span id="gad7CharCount">0/1000</span>
+                        </div>
+                    </div>
+                    
                     <div class="form-actions" style="margin-top: 30px; text-align: center;">
                         <button type="button" onclick="calculateGAD7Score()" class="submit-btn" style="margin-right: 15px;">
                             <span data-en="Calculate Results" data-mr="परिणाम काढा">Calculate Results</span>
@@ -442,6 +765,27 @@
                 
                 <form id="ghq12Form" class="screening-form">
                     <div id="ghq12Questions"><!-- Questions will be populated by JavaScript --></div>
+                    
+                    <!-- User Description Field -->
+                    <div class="user-description-section" style="margin-top: 30px; padding: 20px; background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 10px;">
+                        <h4 style="color: #6366f1; margin-bottom: 15px;">💭 <span data-en="Additional Information (Optional)" data-mr="अतिरिक्त माहिती (ऐच्छिक)">Additional Information (Optional)</span></h4>
+                        <p style="color: #9ca3af; margin-bottom: 15px; font-size: 14px;">
+                            <span data-en="Please describe any additional concerns, symptoms, or context you'd like to share about your general well-being or mental health. This information will help provide more personalized recommendations." 
+                                  data-mr="कृपया तुमच्या सामान्य कल्याण किंवा मानसिक आरोग्याबद्दल तुम्हाला सामायिक करायच्या कोणत्याही अतिरिक्त चिंता, लक्षणे किंवा संदर्भाचे वर्णन करा. ही माहिती अधिक वैयक्तिकृत शिफारसी देण्यास मदत करेल.">
+                                Please describe any additional concerns, symptoms, or context you'd like to share about your general well-being or mental health. This information will help provide more personalized recommendations.
+                            </span>
+                        </p>
+                        <textarea id="ghq12UserDescription" 
+                                  placeholder="Share your thoughts, concerns, or any additional context..." 
+                                  data-placeholder-en="Share your thoughts, concerns, or any additional context..."
+                                  data-placeholder-mr="तुमचे विचार, चिंता किंवा कोणताही अतिरिक्त संदर्भ सामायिक करा..."
+                                  style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 8px; background: rgba(30, 41, 59, 0.5); color: #f3f4f6; font-family: inherit; resize: vertical;"
+                                  maxlength="1000"></textarea>
+                        <div style="text-align: right; margin-top: 5px; font-size: 12px; color: #9ca3af;">
+                            <span id="ghq12CharCount">0/1000</span>
+                        </div>
+                    </div>
+                    
                     <div class="form-actions" style="margin-top: 30px; text-align: center;">
                         <button type="button" onclick="calculateGHQ12Score()" class="submit-btn" style="margin-right: 15px;">
                             <span data-en="Calculate Results" data-mr="परिणाम काढा">Calculate Results</span>
@@ -588,6 +932,67 @@
                     <br><br>
                     <button class="timer-btn" id="timerControl" onclick="toggleTimer()"><span data-en="Start" data-mr="सुरुवात">Start</span></button>
                     <button class="timer-btn" onclick="resetTimer()"><span data-en="Reset" data-mr="रीसेट">Reset</span></button>
+                    
+                    <!-- Enhanced Music Controls -->
+                    <div class="music-player" style="margin-top: 25px; padding: 20px; background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(99, 102, 241, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3); border-radius: 12px; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.1);">
+                        <!-- Music Header -->
+                        <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #8b5cf6, #6366f1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                <span style="font-size: 18px;">🎵</span>
+                            </div>
+                            <div>
+                                <h5 style="margin: 0; color: #f3f4f6; font-size: 16px; font-weight: 600;">
+                                    <span data-en="Meditation Music" data-mr="ध्यान संगीत">Meditation Music</span>
+                                </h5>
+                                <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                                    <span data-en="Calming background music for your session" data-mr="तुमच्या सत्रासाठी शांत पार्श्वसंगीत">Calming background music for your session</span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Music Controls Row -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <!-- Play/Stop Button -->
+                            <button id="musicToggle" onclick="toggleMeditationMusic()" 
+                                    style="display: flex; align-items: center; gap: 8px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; border: none; padding: 10px 16px; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);"
+                                    onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(139, 92, 246, 0.4)'"
+                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(139, 92, 246, 0.3)'">
+                                <span id="musicIcon">▶️</span>
+                                <span data-en="Play Music" data-mr="संगीत चालवा">Play Music</span>
+                            </button>
+                            
+                            <!-- Volume Control -->
+                            <div style="display: flex; align-items: center; gap: 8px; background: rgba(30, 41, 59, 0.5); padding: 8px 12px; border-radius: 20px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                                <span style="font-size: 14px; color: #a78bfa;">🔊</span>
+                                <input type="range" id="musicVolume" min="0" max="100" value="50" onchange="setMusicVolume(this.value)" 
+                                       style="width: 80px; height: 4px; background: rgba(139, 92, 246, 0.3); border-radius: 2px; outline: none; -webkit-appearance: none; cursor: pointer;">
+                                <span id="volumeDisplay" style="font-size: 12px; color: #9ca3af; min-width: 30px;">50%</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Music Status Indicator -->
+                        <div id="musicStatus" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.2); border-radius: 8px; margin-bottom: 10px; display: none;">
+                            <div style="width: 8px; height: 8px; background: #06b6d4; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                            <span style="color: #06b6d4; font-size: 12px;">
+                                <span data-en="Music is playing..." data-mr="संगीत वाजत आहे...">Music is playing...</span>
+                            </span>
+                        </div>
+                        
+                        <!-- Hidden Audio Element -->
+                        <audio id="meditationAudio" loop preload="auto" style="display: none;">
+                            <source src="/music/meditation-music.mp3" type="audio/mpeg">
+                            <source src="/music/30%20Minute%20Deep%20Meditation%20Music%20for%20Positive%20Energy%20%E2%80%A2%20Relax%20Mind%20Body%2C%20Inner%20Peace%20[YRJ6xoiRcpQ].mp3" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                        
+                        <!-- Help Text -->
+                        <p style="font-size: 11px; color: #6b7280; margin: 0; text-align: center; line-height: 1.4;">
+                            <span data-en="💡 Music will automatically sync with your meditation timer" 
+                                  data-mr="💡 संगीत तुमच्या ध्यान टाइमरसह आपोआप समक्रमित होईल">
+                                💡 Music will automatically sync with your meditation timer
+                            </span>
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -703,6 +1108,9 @@
             <div id="newPostForm" style="display: none; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(139, 92, 246, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
                 <h4 style="color: #c084fc; margin-bottom: 15px;"><span data-en="Share Anonymously" data-mr="अज्ञातपणे सामायिक करा">Share Anonymously</span></h4>
                 <textarea id="newPostContent" rows="4" style="width: 100%; margin: 10px 0; padding: 12px; border-radius: 8px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(139, 92, 246, 0.3); color: #f3f4f6;" data-placeholder-en="Share your experience, ask for advice, or offer support to others..." data-placeholder-mr="तुमचा अनुभव सामायिक करा, सल्ला विचारा किंवा इतरांना सहाय्य ऑफर करा..." placeholder="Share your experience, ask for advice, or offer support to others..."></textarea>
+                <div style="margin: 10px 0; color: #9ca3af; font-size: 14px;">
+                    <span data-en="Your post will be categorized automatically based on content. All posts are anonymous." data-mr="तुमची पोस्ट आपोआप वर्गीकृत केली जाईल. सर्व पोस्ट अज्ञात आहेत.">Your post will be categorized automatically based on content. All posts are anonymous.</span>
+                </div>
                 <button onclick="submitPost()" class="submit-btn" style="margin-right: 10px;"><span data-en="Post" data-mr="पोस्ट करा">Post</span></button>
                 <button onclick="cancelPost()" style="background: #6b7280; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;"><span data-en="Cancel" data-mr="रद्द करा">Cancel</span></button>
             </div>
@@ -1100,6 +1508,8 @@
         let timerMinutes = 5;
         let timerSeconds = 0;
         let isTimerRunning = false;
+        let meditationAudio = null;
+        let isMusicPlaying = false;
 
         function startTimer(minutes) {
             timerMinutes = minutes;
@@ -1119,12 +1529,18 @@
             isTimerRunning = true;
             document.getElementById('timerControl').innerHTML = '<span data-en="Pause" data-mr="थांबवा">Pause</span>';
             
+            // Start music if it was playing
+            if (isMusicPlaying && meditationAudio) {
+                meditationAudio.play().catch(e => console.log('Audio play failed:', e));
+            }
+            
             timerInterval = setInterval(() => {
                 if (timerSeconds === 0) {
                     if (timerMinutes === 0) {
                         // Timer finished
                         pauseTimer();
-                        alert('Meditation session complete! 🧘');
+                        stopMeditationMusic();
+                        alert('Meditation session complete! 🧘\nTake a moment to notice how you feel.');
                         return;
                     }
                     timerMinutes--;
@@ -1140,10 +1556,16 @@
             isTimerRunning = false;
             clearInterval(timerInterval);
             document.getElementById('timerControl').innerHTML = '<span data-en="Start" data-mr="सुरुवात">Start</span>';
+            
+            // Pause music when timer is paused
+            if (meditationAudio && isMusicPlaying) {
+                meditationAudio.pause();
+            }
         }
 
         function resetTimer() {
             pauseTimer();
+            stopMeditationMusic();
             timerMinutes = 5;
             timerSeconds = 0;
             updateTimerDisplay();
@@ -1158,9 +1580,204 @@
             }
         }
 
+        // Meditation music functions
+        function initializeMeditationAudio() {
+            meditationAudio = document.getElementById('meditationAudio');
+            if (meditationAudio) {
+                meditationAudio.volume = 0.5; // Set initial volume to 50%
+                
+                meditationAudio.addEventListener('loadstart', function() {
+                    console.log('Audio loading started');
+                });
+                
+                meditationAudio.addEventListener('canplay', function() {
+                    console.log('Audio can start playing');
+                });
+                
+                meditationAudio.addEventListener('ended', function() {
+                    // Audio ended naturally, reset music button
+                    isMusicPlaying = false;
+                    updateMusicButton();
+                });
+                
+                meditationAudio.addEventListener('error', function(e) {
+                    console.error('Audio error:', e);
+                    console.error('Audio error details:', meditationAudio.error);
+                    alert('Unable to load meditation music. Error: ' + (meditationAudio.error ? meditationAudio.error.message : 'Unknown error'));
+                });
+                
+                // Try to load the audio
+                meditationAudio.load();
+                console.log('Audio element initialized, src:', meditationAudio.src);
+            } else {
+                console.error('Audio element not found');
+            }
+        }
+
+        function toggleMeditationMusic() {
+            if (!meditationAudio) {
+                initializeMeditationAudio();
+            }
+            
+            // This click itself counts as user interaction
+            userHasInteracted = true;
+            
+            if (isMusicPlaying) {
+                stopMeditationMusic();
+            } else {
+                startMeditationMusic();
+            }
+        }
+
+        function startMeditationMusic() {
+            if (meditationAudio) {
+                meditationAudio.play().then(() => {
+                    isMusicPlaying = true;
+                    updateMusicButton();
+                    createMusicVisualization();
+                }).catch(e => {
+                    console.error('Failed to play audio:', e);
+                    // Show a more user-friendly error message
+                    const errorMsg = e.name === 'NotAllowedError' 
+                        ? 'Please allow audio playback in your browser settings or try clicking play again.'
+                        : 'Unable to play meditation music. Please check your audio settings.';
+                    alert(errorMsg);
+                });
+            }
+        }
+
+        function stopMeditationMusic() {
+            if (meditationAudio) {
+                meditationAudio.pause();
+                meditationAudio.currentTime = 0;
+                isMusicPlaying = false;
+                updateMusicButton();
+            }
+        }
+
+        function setMusicVolume(volume) {
+            if (meditationAudio) {
+                meditationAudio.volume = volume / 100;
+            }
+            
+            // Update volume display
+            const volumeDisplay = document.getElementById('volumeDisplay');
+            if (volumeDisplay) {
+                volumeDisplay.textContent = volume + '%';
+            }
+            
+            // Update volume slider appearance
+            const volumeSlider = document.getElementById('musicVolume');
+            if (volumeSlider) {
+                const percentage = volume;
+                volumeSlider.style.background = `linear-gradient(to right, #8b5cf6 0%, #8b5cf6 ${percentage}%, rgba(139, 92, 246, 0.3) ${percentage}%, rgba(139, 92, 246, 0.3) 100%)`;
+            }
+        }
+
+        function updateMusicButton() {
+            const musicButton = document.getElementById('musicToggle');
+            const musicIcon = document.getElementById('musicIcon');
+            const musicStatus = document.getElementById('musicStatus');
+            
+            if (musicButton && musicIcon) {
+                if (isMusicPlaying) {
+                    musicIcon.textContent = '⏸️';
+                    musicButton.innerHTML = `
+                        <span id="musicIcon">⏸️</span>
+                        <span data-en="Pause Music" data-mr="संगीत थांबवा">Pause Music</span>
+                    `;
+                    musicButton.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                    if (musicStatus) {
+                        musicStatus.style.display = 'flex';
+                    }
+                } else {
+                    musicIcon.textContent = '▶️';
+                    musicButton.innerHTML = `
+                        <span id="musicIcon">▶️</span>
+                        <span data-en="Play Music" data-mr="संगीत चालवा">Play Music</span>
+                    `;
+                    musicButton.style.background = 'linear-gradient(135deg, #8b5cf6, #7c3aed)';
+                    if (musicStatus) {
+                        musicStatus.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Enhanced music experience functions
+        function createMusicVisualization() {
+            // Add subtle visual feedback when music is playing
+            const musicStatus = document.getElementById('musicStatus');
+            if (musicStatus && isMusicPlaying) {
+                const waves = musicStatus.querySelector('div');
+                if (waves) {
+                    waves.style.animation = 'musicWave 1.5s ease-in-out infinite';
+                }
+            }
+        }
+
+        // Track user interaction for autoplay compliance
+        let userHasInteracted = false;
+        
+        function enableAudioAfterInteraction() {
+            userHasInteracted = true;
+            console.log('User interaction detected - audio can now play');
+        }
+        
+
+
+        // Quick test function for console debugging (can be removed in production)
+        window.testQuickSubmission = async function() {
+            console.log('🧪 Quick test submission...');
+            
+            // Simulate PHQ-9 responses
+            const testResponses = {
+                'phq9_1': 1,
+                'phq9_2': 2, 
+                'phq9_3': 1,
+                'phq9_4': 1,
+                'phq9_5': 0,
+                'phq9_6': 1,
+                'phq9_7': 1,
+                'phq9_8': 0,
+                'phq9_9': 0
+            };
+            
+            const testResult = calculateScreeningScore('phq9', testResponses);
+            const testToolData = getToolData('phq9');
+            const testDescription = 'Quick test from console - checking if submission works properly.';
+            
+            await submitScreeningResponse('PHQ-9', testResponses, testDescription, testResult, testToolData);
+            console.log('✅ Quick test completed');
+        };
+
+        // Initialize audio when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMeditationAudio();
+            setupCharacterCounting();
+            
+            // Initialize volume slider appearance
+            setMusicVolume(50);
+            
+            // Listen for user interactions to enable audio
+            document.addEventListener('click', enableAudioAfterInteraction, { once: true });
+            document.addEventListener('keydown', enableAudioAfterInteraction, { once: true });
+            document.addEventListener('touchstart', enableAudioAfterInteraction, { once: true });
+        });
+
         // Peer Support functionality
+        let currentUserId = null;
+        let peerSupportPosts = [];
+
+        // Initialize peer support when section is shown
+        function initializePeerSupport() {
+            currentUserId = document.getElementById('currentUserEmail').textContent || `anonymous_${Date.now()}`;
+            loadPeerSupportPosts();
+        }
+
         function showNewPostForm() {
             document.getElementById('newPostForm').style.display = 'block';
+            document.getElementById('newPostContent').focus();
         }
 
         function cancelPost() {
@@ -1168,47 +1785,361 @@
             document.getElementById('newPostContent').value = '';
         }
 
-        function submitPost() {
+        async function submitPost() {
             const content = document.getElementById('newPostContent').value.trim();
             if (!content) {
                 alert('Please enter some content for your post.');
                 return;
             }
+
+            if (content.length > 2000) {
+                alert('Post content must be 2000 characters or less.');
+                return;
+            }
+
+            try {
+                // Show loading state
+                const submitBtn = document.querySelector('#newPostForm .submit-btn');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<span data-en="Posting..." data-mr="पोस्ट करत आहे...">Posting...</span>';
+                submitBtn.disabled = true;
+
+                const response = await fetch('/api/peer-support/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title: content.substring(0, 100) + (content.length > 100 ? '...' : ''),
+                        content: content,
+                        authorId: currentUserId,
+                        authorEmail: document.getElementById('currentUserEmail').textContent,
+                        authorName: document.getElementById('currentUserName').textContent || 'Anonymous Student',
+                        language: currentLanguage
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Clear form and hide
+                    cancelPost();
+                    
+                    // Show success message
+                    let message = 'Your post has been shared successfully!';
+                    if (result.moderation.needsReview) {
+                        message = result.moderation.riskLevel === 'high' 
+                            ? 'Your post has been submitted for review due to content concerns. Our team will review it shortly.'
+                            : 'Your post has been shared and flagged for moderation review.';
+                    }
+                    alert(message);
+                    
+                    // Reload posts to show the new one
+                    loadPeerSupportPosts();
+                } else {
+                    throw new Error(result.message || 'Failed to create post');
+                }
+            } catch (error) {
+                console.error('Error submitting post:', error);
+                alert('Failed to submit post. Please try again.');
+            } finally {
+                // Reset button
+                const submitBtn = document.querySelector('#newPostForm .submit-btn');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function loadPeerSupportPosts(category = 'all', sortBy = 'recent') {
+            try {
+                const response = await fetch(`/api/peer-support/posts?category=${category}&sortBy=${sortBy}&limit=20`);
+                const result = await response.json();
+
+                if (result.success) {
+                    peerSupportPosts = result.posts;
+                    renderPeerSupportPosts();
+                } else {
+                    console.error('Failed to load posts:', result.message);
+                    // Show static posts as fallback
+                    renderStaticPosts();
+                }
+            } catch (error) {
+                console.error('Error loading posts:', error);
+                // Show static posts as fallback
+                renderStaticPosts();
+            }
+        }
+
+        function renderPeerSupportPosts() {
+            const forumPosts = document.getElementById('forumPosts');
             
-            // Create new post element
-            const postElement = document.createElement('div');
-            postElement.className = 'forum-post';
-            postElement.innerHTML = `
-                <h4><span data-en="Anonymous Post" data-mr="अज्ञात पोस्ट">Anonymous Post</span></h4>
-                <div class="post-meta"><span data-en="Anonymous Student • Just now" data-mr="अज्ञात विद्यार्थी • आत्ताच">Anonymous Student • Just now</span></div>
-                <p>${content}</p>
-                <div class="post-actions">
-                    <button class="support-btn" onclick="showSupport(this)">💙 <span data-en="Support" data-mr="सहाय्य">Support</span> (0)</button>
-                    <button class="reply-btn" onclick="showReplyForm(this)">💬 <span data-en="Reply" data-mr="उत्तर द्या">Reply</span></button>
+            if (peerSupportPosts.length === 0) {
+                forumPosts.innerHTML = `
+                    <div class="forum-post" style="text-align: center; color: #9ca3af;">
+                        <p><span data-en="No posts yet. Be the first to share your story!" data-mr="अजून कोणतीही पोस्ट नाही. तुमची कहाणी सामायिक करणारे पहिले व्हा!">No posts yet. Be the first to share your story!</span></p>
+                    </div>
+                `;
+                return;
+            }
+
+            forumPosts.innerHTML = peerSupportPosts.map(post => `
+                <div class="forum-post" data-post-id="${post.id}">
+                    <h4>${escapeHtml(post.title)}</h4>
+                    <div class="post-meta">
+                        <span data-en="${post.authorName} • ${post.timeAgo}" data-mr="${post.authorName} • ${post.timeAgo}">${post.authorName} • ${post.timeAgo}</span>
+                        ${post.category !== 'general' ? `<span class="post-category">${post.category}</span>` : ''}
+                        ${post.isPinned ? '<span class="post-pinned">📌 Pinned</span>' : ''}
+                    </div>
+                    <p>${escapeHtml(post.content)}</p>
+                    <div class="post-actions">
+                        <button class="support-btn ${post.userHasSupported ? 'active' : ''}" onclick="togglePostSupport('${post.id}', this)">
+                            💙 <span data-en="Support" data-mr="सहाय्य">Support</span> (${post.supportCount})
+                        </button>
+                        <button class="reply-btn" onclick="showPostDetails('${post.id}')">
+                            💬 <span data-en="Reply" data-mr="उत्तर द्या">Reply</span> (${post.replyCount})
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStaticPosts() {
+            // Keep the existing static posts as fallback
+            const forumPosts = document.getElementById('forumPosts');
+            // The static posts are already in the HTML, so we don't need to do anything
+        }
+
+        async function togglePostSupport(postId, button) {
+            try {
+                const response = await fetch(`/api/peer-support/posts/${postId}/support`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update button state
+                    button.classList.toggle('active', result.supported);
+                    button.innerHTML = `💙 <span data-en="Support" data-mr="सहाय्य">Support</span> (${result.supportCount})`;
+                    
+                    // Update local data
+                    const post = peerSupportPosts.find(p => p.id === postId);
+                    if (post) {
+                        post.supportCount = result.supportCount;
+                        post.userHasSupported = result.supported;
+                    }
+                } else {
+                    throw new Error(result.message || 'Failed to toggle support');
+                }
+            } catch (error) {
+                console.error('Error toggling support:', error);
+                alert('Failed to update support. Please try again.');
+            }
+        }
+
+        async function showPostDetails(postId) {
+            try {
+                const response = await fetch(`/api/peer-support/posts/${postId}?viewerId=${currentUserId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayPostModal(result.post);
+                } else {
+                    throw new Error(result.message || 'Failed to load post details');
+                }
+            } catch (error) {
+                console.error('Error loading post details:', error);
+                alert('Failed to load post details. Please try again.');
+            }
+        }
+
+        function displayPostModal(post) {
+            // Create modal HTML
+            const modalHtml = `
+                <div id="postModal" class="modal-overlay" onclick="closePostModal(event)">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header">
+                            <h3>${escapeHtml(post.title)}</h3>
+                            <button class="modal-close" onclick="closePostModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="post-meta">
+                                <span>${post.authorName} • ${post.timeAgo}</span>
+                                ${post.category !== 'general' ? `<span class="post-category">${post.category}</span>` : ''}
+                            </div>
+                            <div class="post-content">
+                                <p>${escapeHtml(post.content)}</p>
+                            </div>
+                            <div class="post-actions">
+                                <button class="support-btn ${post.userHasSupported ? 'active' : ''}" onclick="togglePostSupport('${post.id}', this)">
+                                    💙 Support (${post.supportCount})
+                                </button>
+                                <span class="post-stats">👁️ ${post.viewCount} views</span>
+                            </div>
+                            
+                            <div class="replies-section">
+                                <h4>Replies (${post.replies.length})</h4>
+                                ${!post.isLocked ? `
+                                    <div class="reply-form">
+                                        <textarea id="replyContent" placeholder="Share your thoughts or support..." rows="3"></textarea>
+                                        <button onclick="submitReply('${post.id}')" class="submit-btn">Reply</button>
+                                    </div>
+                                ` : '<p style="color: #9ca3af;">This post is locked and cannot receive new replies.</p>'}
+                                
+                                <div class="replies-list">
+                                    ${post.replies.map(reply => `
+                                        <div class="reply" data-reply-id="${reply.id}">
+                                            <div class="reply-meta">
+                                                <span>${reply.authorName} • ${reply.timeAgo}</span>
+                                            </div>
+                                            <p>${escapeHtml(reply.content)}</p>
+                                            <div class="reply-actions">
+                                                <button class="support-btn ${reply.userHasSupported ? 'active' : ''}" onclick="toggleReplySupport('${post.id}', '${reply.id}', this)">
+                                                    💙 Support (${reply.supportCount})
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
-            
-            // Add to forum posts
-            const forumPosts = document.getElementById('forumPosts');
-            forumPosts.insertBefore(postElement, forumPosts.firstChild);
-            
-            // Clear form and hide
-            cancelPost();
-            
-            alert('Your post has been shared anonymously. Thank you for contributing to our community!');
+
+            // Add modal to page
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
         }
 
-        function showSupport(button) {
-            button.classList.toggle('active');
-            const countText = button.textContent;
-            const currentCount = parseInt(countText.match(/\((\d+)\)/)[1]);
-            const newCount = button.classList.contains('active') ? currentCount + 1 : currentCount - 1;
-            button.innerHTML = button.innerHTML.replace(/\(\d+\)/, `(${newCount})`);
+        function closePostModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            const modal = document.getElementById('postModal');
+            if (modal) {
+                modal.remove();
+            }
         }
 
-        function showReplyForm(button) {
-            // Simple implementation - in a real app, this would show a reply form
-            alert('Reply functionality would be implemented here in a full application.');
+        async function submitReply(postId) {
+            const content = document.getElementById('replyContent').value.trim();
+            if (!content) {
+                alert('Please enter a reply.');
+                return;
+            }
+
+            if (content.length > 1000) {
+                alert('Reply must be 1000 characters or less.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/peer-support/posts/${postId}/replies`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        authorId: currentUserId,
+                        authorEmail: document.getElementById('currentUserEmail').textContent,
+                        authorName: document.getElementById('currentUserName').textContent || 'Anonymous Student'
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Close modal and reload post details
+                    closePostModal();
+                    showPostDetails(postId);
+                    
+                    // Show success message
+                    let message = 'Reply added successfully!';
+                    if (result.moderation.needsReview) {
+                        message = result.moderation.riskLevel === 'high' 
+                            ? 'Reply submitted for review due to content concerns.'
+                            : 'Reply added and flagged for moderation review.';
+                    }
+                    alert(message);
+                } else {
+                    throw new Error(result.message || 'Failed to add reply');
+                }
+            } catch (error) {
+                console.error('Error submitting reply:', error);
+                alert('Failed to submit reply. Please try again.');
+            }
+        }
+
+        async function toggleReplySupport(postId, replyId, button) {
+            try {
+                const response = await fetch(`/api/peer-support/posts/${postId}/replies/${replyId}/support`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        userId: currentUserId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update button state
+                    button.classList.toggle('active', result.supported);
+                    button.innerHTML = `💙 Support (${result.supportCount})`;
+                } else {
+                    throw new Error(result.message || 'Failed to toggle support');
+                }
+            } catch (error) {
+                console.error('Error toggling reply support:', error);
+                alert('Failed to update support. Please try again.');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize peer support when the section is shown
+        function showSection(sectionName) {
+            console.log('Showing section:', sectionName);
+
+            // Hide all sections
+            document.querySelectorAll('.content-area').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                
+                // Initialize peer support if showing that section
+                if (sectionName === 'peer-support') {
+                    initializePeerSupport();
+                }
+            }
+
+            // Update navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Find and activate the corresponding nav button
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                if (btn.onclick && btn.onclick.toString().includes(sectionName)) {
+                    btn.classList.add('active');
+                }
+            });
         }
 
         // Error handling
@@ -1413,6 +2344,96 @@
             return ScreeningTools[toolMap[toolKey]];
         }
         
+        // Submit screening response to backend
+        async function submitScreeningResponse(toolName, responses, userDescription, result, toolData) {
+            console.log('📤 Submitting', toolName, 'screening response...');
+            
+            try {
+                // Get user information
+                const userId = document.getElementById('currentUserName')?.textContent || 'anonymous_user';
+                const userEmail = document.getElementById('currentUserEmail')?.textContent || 'anonymous@example.com';
+                const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+                
+                // Prepare detailed responses with question text
+                // Convert responses object to array in correct order
+                const responsesArray = toolData.questions.map(question => responses[question.id] || 0);
+                
+                const detailedResponses = toolData.questions.map((question, index) => ({
+                    questionId: question.id,
+                    questionText: question.text,
+                    response: responsesArray[index],
+                    category: question.category || 'general'
+                }));
+                
+                // Prepare crisis indicators
+                const crisisIndicators = {
+                    hasCrisisAlerts: result.crisisAlerts && result.crisisAlerts.length > 0,
+                    crisisAlerts: result.crisisAlerts || [],
+                    requiresImmediateAttention: result.crisisAlerts && result.crisisAlerts.some(alert => alert.severity === 'critical')
+                };
+                
+                // Prepare results object
+                const resultsData = {
+                    totalScore: result.totalScore,
+                    maxScore: result.maxScore,
+                    percentage: Math.round((result.totalScore / result.maxScore) * 100),
+                    severityLevel: result.level,
+                    description: result.description,
+                    isAboveThreshold: result.isAboveThreshold,
+                    clinicalThreshold: result.clinicalThreshold || 10
+                };
+                
+                const payload = {
+                    userId,
+                    userEmail,
+                    sessionId,
+                    toolName,
+                    responses: detailedResponses,
+                    userDescription,
+                    results: resultsData,
+                    crisisIndicators,
+                    recommendations: result.recommendations || [],
+                    language: currentLanguage
+                };
+                
+                const response = await fetch('/api/screening-responses/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('✅ Screening response submitted successfully:', data.responseId);
+                    
+                    // Show success message to user
+                    alert('✅ Your screening response has been saved successfully!' + 
+                          (data.responseId ? ` (ID: ${data.responseId.substring(0, 8)}...)` : '') +
+                          '\n\n💡 Tip: Counselors can now view your response in the admin dashboard.');
+                    
+                    // Show additional message if high risk
+                    if (data.requiresFollowUp) {
+                        setTimeout(() => {
+                            alert(currentLanguage === 'mr' 
+                                ? 'तुमचा प्रतिसाद सुरक्षितपणे जतन केला गेला आहे. आमचे समुपदेशक तुमच्याशी संपर्क साधू शकतात.'
+                                : '🚨 Your response indicates you may benefit from additional support. Our counselors may reach out to you for follow-up care.'
+                            );
+                        }, 2000);
+                    }
+                } else {
+                    console.error('❌ Failed to submit screening response:', data.error);
+                    alert('⚠️ There was an issue saving your response, but your results are still available above.');
+                }
+                
+            } catch (error) {
+                console.error('❌ Error submitting screening response:', error);
+                alert('⚠️ Unable to save response to database, but your results are displayed above.');
+            }
+        }
+
         // Calculate PHQ-9 Score
         function calculatePHQ9Score() {
             const responses = getFormResponses('phq9Form');
@@ -1421,6 +2442,12 @@
             if (!validateAllQuestionsAnswered('phq9Form', toolData)) return;
             
             const result = calculateScreeningScore('phq9', responses);
+            const userDescription = document.getElementById('phq9UserDescription').value.trim();
+            result.userDescription = userDescription;
+            
+            // Submit to backend
+            submitScreeningResponse('PHQ-9', responses, userDescription, result, toolData);
+            
             displayScreeningResults('phq9Results', result, toolData);
         }
         
@@ -1432,6 +2459,12 @@
             if (!validateAllQuestionsAnswered('gad7Form', toolData)) return;
             
             const result = calculateScreeningScore('gad7', responses);
+            const userDescription = document.getElementById('gad7UserDescription').value.trim();
+            result.userDescription = userDescription;
+            
+            // Submit to backend
+            submitScreeningResponse('GAD-7', responses, userDescription, result, toolData);
+            
             displayScreeningResults('gad7Results', result, toolData);
         }
         
@@ -1443,7 +2476,46 @@
             if (!validateAllQuestionsAnswered('ghq12Form', toolData)) return;
             
             const result = calculateScreeningScore('ghq12', responses);
+            const userDescription = document.getElementById('ghq12UserDescription').value.trim();
+            result.userDescription = userDescription;
+            
+            console.log('📊 GHQ-12 calculation result:', result);
+            
+            // Submit to backend
+            console.log('📤 Submitting GHQ-12 to backend...');
+            submitScreeningResponse('GHQ-12', responses, userDescription, result, toolData);
+            
             displayScreeningResults('ghq12Results', result, toolData);
+        }
+
+        // Character counting for description fields
+        function setupCharacterCounting() {
+            const textareas = [
+                { id: 'phq9UserDescription', countId: 'phq9CharCount' },
+                { id: 'gad7UserDescription', countId: 'gad7CharCount' },
+                { id: 'ghq12UserDescription', countId: 'ghq12CharCount' }
+            ];
+            
+            textareas.forEach(({ id, countId }) => {
+                const textarea = document.getElementById(id);
+                const counter = document.getElementById(countId);
+                
+                if (textarea && counter) {
+                    textarea.addEventListener('input', function() {
+                        const length = this.value.length;
+                        counter.textContent = `${length}/1000`;
+                        
+                        // Change color when approaching limit
+                        if (length > 900) {
+                            counter.style.color = '#ef4444';
+                        } else if (length > 800) {
+                            counter.style.color = '#f59e0b';
+                        } else {
+                            counter.style.color = '#9ca3af';
+                        }
+                    });
+                }
+            });
         }
         
         // Get form responses
@@ -1499,11 +2571,12 @@
                 // Check for crisis indicators
                 if (question.crisisItem && responseValue > 0) {
                     crisisAlerts.push({
-                        type: 'suicidalIdeation',
-                        severity: 'high',
+                        type: 'suicidal_ideation',
+                        severity: 'critical',
                         message: currentLanguage === 'mr' 
                             ? 'आत्महत्येचे विचार आढळले आहेत. तत्काळ व्यावसायिक मदत घ्या.' 
-                            : 'Suicidal thoughts detected. Please seek immediate professional help.'
+                            : 'Suicidal thoughts detected. Please seek immediate professional help.',
+                        questionId: question.id
                     });
                 }
             });
@@ -1659,6 +2732,21 @@
                         </ul>
                     </div>
                     
+                    ${result.userDescription ? `
+                        <div class="user-description-results" style="margin-bottom: 25px;">
+                            <h4 style="color: #f3f4f6; margin-bottom: 15px;">💭 <span data-en="Your Additional Notes:" data-mr="तुमच्या अतिरिक्त टिप्पण्या:">Your Additional Notes:</span></h4>
+                            <div style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 15px; border-radius: 8px; color: #d1d5db; line-height: 1.6; white-space: pre-wrap;">
+                                ${result.userDescription}
+                            </div>
+                            <p style="color: #9ca3af; font-size: 12px; margin-top: 10px;">
+                                <span data-en="This information has been included in your assessment for more personalized recommendations." 
+                                      data-mr="अधिक वैयक्तिकृत शिफारसींसाठी ही माहिती तुमच्या मूल्यांकनात समाविष्ट केली गेली आहे.">
+                                    This information has been included in your assessment for more personalized recommendations.
+                                </span>
+                            </p>
+                        </div>
+                    ` : ''}
+                    
                     <div class="disclaimer" style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 15px; border-radius: 8px; color: #06b6d4; font-size: 14px;">
                         <p><strong><span data-en="Important:" data-mr="महत्वाचे:">Important:</span></strong> <span data-en="This screening is for informational purposes only and does not constitute a clinical diagnosis. Please discuss these results with a qualified healthcare provider." data-mr="ही तपासणी केवळ माहितीच्या हेतूंसाठी आहे आणि क्लिनिकल निदान नाही. कृपया या परिणामांवर पात्र आरोग्यसेवा प्रदात्यासोबत चर्चा करा.">This screening is for informational purposes only and does not constitute a clinical diagnosis. Please discuss these results with a qualified healthcare provider.</span></p>
                     </div>
@@ -1699,12 +2787,21 @@
         function resetScreening(toolKey) {
             const form = document.getElementById(`${toolKey}Form`);
             const results = document.getElementById(`${toolKey}Results`);
+            const userDescription = document.getElementById(`${toolKey}UserDescription`);
+            const charCount = document.getElementById(`${toolKey}CharCount`);
             
             if (form) {
                 form.reset();
             }
             if (results) {
                 results.style.display = 'none';
+            }
+            if (userDescription) {
+                userDescription.value = '';
+            }
+            if (charCount) {
+                charCount.textContent = '0/1000';
+                charCount.style.color = '#9ca3af';
             }
         }
         

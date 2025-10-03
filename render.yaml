@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: aarogyatech-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGODB_URI
+        fromDatabase:
+          name: aarogyatech-db
+          property: connectionString
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGINS
+        value: https://aarogyatech-backend.onrender.com
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+
+databases:
+  - name: aarogyatech-db
+    databaseName: aarogyatech
+    user: aarogyatech_user
+    plan: free

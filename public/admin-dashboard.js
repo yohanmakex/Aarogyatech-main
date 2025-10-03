@@ -2227,9 +2227,9 @@ class AdminDashboard {
                 <td>${booking.id.substring(0, 8)}...</td>
                 <td>${booking.studentId || 'Anonymous'}</td>
                 <td>${booking.preferredDate} ${booking.preferredTime}</td>
-                <td><span class="session-type ${booking.sessionType}">${booking.sessionType}</span></td>
+                <td><span class="session-type-badge ${booking.sessionType}">${booking.sessionType}</span></td>
                 <td>${booking.contactMethod}: ${booking.contactInfo}</td>
-                <td><span class="status ${booking.status}">${booking.status}</span></td>
+                <td><span class="booking-status-badge ${booking.status}">${booking.status}</span></td>
                 <td>
                     <button class="view-booking-btn" onclick="viewBookingDetails('${booking.id}')">
                         👁️ View
@@ -2300,7 +2300,7 @@ class AdminDashboard {
                 </div>
                 <div class="detail-item">
                     <strong>Status:</strong>
-                    <span class="status ${booking.status}">${booking.status}</span>
+                    <span class="booking-status-badge ${booking.status}">${booking.status}</span>
                 </div>
                 <div class="detail-item">
                     <strong>Created At:</strong>
@@ -2562,3 +2562,825 @@ function updateBookingStatus(status) {
 document.addEventListener('DOMContentLoaded', () => {
     adminDashboard = new AdminDashboard();
 });
+
+// ========== SCREENING RESPONSES MANAGEMENT ==========
+
+class ScreeningResponsesManager {
+    constructor() {
+        this.currentPage = 1;
+        this.pageSize = 20;
+        this.totalPages = 1;
+        this.currentFilters = {};
+        this.selectedResponseId = null;
+        this.autoRefreshInterval = null;
+        this.lastUpdateTime = null;
+    }
+
+    async loadScreeningResponses(page = 1) {
+        try {
+            console.log('Loading screening responses, page:', page);
+            const params = new URLSearchParams({
+                page: page,
+                limit: this.pageSize,
+                sortBy: 'completedAt',
+                sortOrder: 'desc',
+                ...this.currentFilters
+            });
+
+            const response = await fetch(`/api/screening-responses/admin/responses?${params}`);
+            const data = await response.json();
+            console.log('Screening responses data:', data);
+
+            if (data.success) {
+                this.displayScreeningResponses(data.data.responses);
+                this.updatePagination(data.data.pagination);
+                this.currentPage = page;
+            } else {
+                console.error('Failed to load screening responses:', data.error);
+                this.showError('Failed to load screening responses');
+            }
+        } catch (error) {
+            console.error('Error loading screening responses:', error);
+            this.showError('Error loading screening responses');
+        }
+    }
+
+    async loadScreeningOverview() {
+        try {
+            console.log('Loading screening overview...');
+            const response = await fetch('/api/screening-responses/admin/overview');
+            const data = await response.json();
+            console.log('Screening overview response:', data);
+
+            if (data.success) {
+                // Check if there's new data
+                const newCount = data.data.overview.totalScreenings;
+                const previousCount = this.lastTotalCount || 0;
+                
+                if (newCount > previousCount && previousCount > 0) {
+                    this.showNewDataAlert(newCount - previousCount);
+                }
+                
+                this.lastTotalCount = newCount;
+                this.updateOverviewStats(data.data.overview);
+                this.displayCrisisAlerts(data.data.recentCrisisAlerts);
+                
+                // Show database status message if present
+                if (data.message) {
+                    this.showDatabaseStatus(data.message);
+                } else {
+                    console.log('Database connected successfully');
+                }
+            }
+        } catch (error) {
+            console.error('Error loading screening overview:', error);
+            this.showDatabaseStatus('Failed to connect to screening database');
+        }
+    }
+
+    showNewDataAlert(newCount) {
+        // Create a temporary notification for new submissions
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            z-index: 1000;
+            font-size: 14px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+        `;
+        
+        notification.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span>🆕</span>
+                <span>${newCount} new screening response${newCount > 1 ? 's' : ''} received!</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOut 0.3s ease-in';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 300);
+        }, 5000);
+    }
+
+    showDatabaseStatus(message) {
+        // Create or update database status indicator
+        let statusDiv = document.getElementById('databaseStatus');
+        if (!statusDiv) {
+            statusDiv = document.createElement('div');
+            statusDiv.id = 'databaseStatus';
+            statusDiv.style.cssText = `
+                background: rgba(245, 158, 11, 0.1);
+                border: 1px solid rgba(245, 158, 11, 0.3);
+                color: #f59e0b;
+                padding: 10px 15px;
+                border-radius: 6px;
+                margin-bottom: 20px;
+                font-size: 14px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            `;
+            
+            const screeningSection = document.getElementById('screening-responses');
+            if (screeningSection) {
+                const header = screeningSection.querySelector('.screening-responses-header');
+                if (header) {
+                    header.parentNode.insertBefore(statusDiv, header.nextSibling);
+                }
+            }
+        }
+        
+        statusDiv.innerHTML = `
+            <span>⚠️</span>
+            <span>${message}</span>
+        `;
+    }
+
+    displayScreeningResponses(responses) {
+        console.log('Displaying screening responses:', responses?.length || 0, 'responses');
+        
+        const tbody = document.getElementById('screeningResponsesTableBody');
+        console.log('Table body element found:', !!tbody);
+        
+        if (!tbody) {
+            console.error('Table body element not found!');
+            return;
+        }
+        
+        if (!responses || responses.length === 0) {
+            console.log('No responses to display');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" style="text-align: center; padding: 20px; color: #9ca3af;">
+                        <span data-en="No screening responses found" data-mr="कोणतेही स्क्रीनिंग प्रतिसाद आढळले नाहीत">No screening responses found</span>
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        console.log('Creating table rows for', responses.length, 'responses');
+        
+        const tableRows = responses.map(response => {
+            const completedAt = new Date(response.completedAt);
+            const riskLevel = this.getRiskLevel(response);
+            const riskColor = this.getRiskColor(riskLevel);
+            
+            console.log('Processing response:', response._id, response.toolName, response.results.severityLevel);
+            
+            return `
+                <tr class="screening-response-row" data-id="${response._id}">
+                    <td>
+                        <div class="date-time">
+                            <div>${completedAt.toLocaleDateString()}</div>
+                            <div style="font-size: 12px; color: #9ca3af;">${completedAt.toLocaleTimeString()}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="user-info">
+                            <div style="font-weight: 500;">${this.maskEmail(response.userEmail)}</div>
+                            <div style="font-size: 12px; color: #9ca3af;">${response.userId.substring(0, 8)}...</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="tool-badge tool-${response.toolName.toLowerCase().replace('-', '')}">${response.toolName}</span>
+                    </td>
+                    <td>
+                        <div class="score-display">
+                            <div style="font-weight: 600;">${response.results.totalScore}/${response.results.maxScore}</div>
+                            <div style="font-size: 12px; color: #9ca3af;">${response.results.percentage}%</div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="severity-badge severity-${response.results.severityLevel}" style="background-color: ${riskColor}20; color: ${riskColor}; border: 1px solid ${riskColor}40;">
+                            ${this.formatSeverityLevel(response.results.severityLevel)}
+                        </span>
+                    </td>
+                    <td>
+                        ${response.crisisIndicators.hasCrisisAlerts ? 
+                            '<span class="crisis-indicator">🚨</span>' : 
+                            '<span style="color: #9ca3af;">—</span>'
+                        }
+                    </td>
+                    <td>
+                        <span class="status-badge status-${response.status}">
+                            ${this.formatStatus(response.status)}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn-small btn-primary" onclick="screeningManager.viewResponseDetail('${response._id}')">
+                                <span data-en="View" data-mr="पहा">View</span>
+                            </button>
+                            ${response.crisisIndicators.hasCrisisAlerts ? 
+                                '<button class="btn-small btn-danger" onclick="screeningManager.handleCrisisResponse(\'' + response._id + '\')">Crisis</button>' : 
+                                ''
+                            }
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+        
+        tbody.innerHTML = tableRows.join('');
+        console.log('Table updated with', tableRows.length, 'rows');
+    }
+
+    updateOverviewStats(stats) {
+        console.log('Updating overview stats with:', stats);
+        
+        const totalElement = document.getElementById('totalScreeningsCount');
+        const crisisElement = document.getElementById('crisisScreeningsCount');
+        const avgElement = document.getElementById('avgScreeningScore');
+        const usersElement = document.getElementById('uniqueScreeningUsers');
+        
+        console.log('DOM elements found:', {
+            total: !!totalElement,
+            crisis: !!crisisElement,
+            avg: !!avgElement,
+            users: !!usersElement
+        });
+        
+        if (totalElement) totalElement.textContent = stats.totalScreenings || 0;
+        if (crisisElement) crisisElement.textContent = stats.crisisAlerts || 0;
+        if (avgElement) avgElement.textContent = Math.round(stats.averageScore || 0) + '%';
+        
+        // Calculate unique users from tool breakdown if available
+        const uniqueUsers = stats.toolBreakdown ? 
+            new Set(stats.toolBreakdown.map(item => item.userId)).size : 0;
+        if (usersElement) usersElement.textContent = uniqueUsers;
+        
+        console.log('Stats updated successfully');
+    }
+
+    displayCrisisAlerts(crisisAlerts) {
+        const container = document.getElementById('crisisAlertsSummary');
+        const list = document.getElementById('crisisAlertsList');
+        
+        if (!crisisAlerts || crisisAlerts.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+
+        container.style.display = 'block';
+        list.innerHTML = crisisAlerts.map(alert => `
+            <div class="crisis-alert-item">
+                <div class="crisis-alert-header">
+                    <span class="crisis-severity">🚨 ${alert.toolName}</span>
+                    <span class="crisis-time">${new Date(alert.completedAt).toLocaleString()}</span>
+                </div>
+                <div class="crisis-alert-details">
+                    <div>User: ${this.maskEmail(alert.userEmail)}</div>
+                    <div>Severity: ${this.formatSeverityLevel(alert.results.severityLevel)}</div>
+                    ${alert.userDescription ? `<div class="user-description">"${alert.userDescription.substring(0, 100)}..."</div>` : ''}
+                </div>
+                <div class="crisis-alert-actions">
+                    <button class="btn-small btn-danger" onclick="screeningManager.handleCrisisResponse('${alert._id}')">
+                        <span data-en="Handle Crisis" data-mr="संकट हाताळा">Handle Crisis</span>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async viewResponseDetail(responseId) {
+        try {
+            const response = await fetch(`/api/screening-responses/admin/response/${responseId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                this.displayResponseDetail(data.data);
+                this.selectedResponseId = responseId;
+                document.getElementById('screeningDetailModal').style.display = 'flex';
+            } else {
+                this.showError('Failed to load response details');
+            }
+        } catch (error) {
+            console.error('Error loading response details:', error);
+            this.showError('Error loading response details');
+        }
+    }
+
+    displayResponseDetail(response) {
+        const content = document.getElementById('screeningDetailContent');
+        const completedAt = new Date(response.completedAt);
+        
+        content.innerHTML = `
+            <div class="response-detail-container">
+                <!-- Basic Information -->
+                <div class="detail-section">
+                    <h4><span data-en="Basic Information" data-mr="मूलभूत माहिती">Basic Information</span></h4>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <label><span data-en="User Email:" data-mr="वापरकर्ता ईमेल:">User Email:</span></label>
+                            <span>${response.userEmail}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><span data-en="Completed At:" data-mr="पूर्ण केले:">Completed At:</span></label>
+                            <span>${completedAt.toLocaleString()}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><span data-en="Tool Used:" data-mr="वापरलेले साधन:">Tool Used:</span></label>
+                            <span>${response.toolName}</span>
+                        </div>
+                        <div class="detail-item">
+                            <label><span data-en="Language:" data-mr="भाषा:">Language:</span></label>
+                            <span>${response.language === 'mr' ? 'Marathi' : 'English'}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="detail-section">
+                    <h4><span data-en="Assessment Results" data-mr="मूल्यांकन परिणाम">Assessment Results</span></h4>
+                    <div class="results-summary">
+                        <div class="result-item">
+                            <label><span data-en="Total Score:" data-mr="एकूण गुण:">Total Score:</span></label>
+                            <span class="score-large">${response.results.totalScore}/${response.results.maxScore} (${response.results.percentage}%)</span>
+                        </div>
+                        <div class="result-item">
+                            <label><span data-en="Severity Level:" data-mr="तीव्रता पातळी:">Severity Level:</span></label>
+                            <span class="severity-badge severity-${response.results.severityLevel}">
+                                ${this.formatSeverityLevel(response.results.severityLevel)}
+                            </span>
+                        </div>
+                        <div class="result-item">
+                            <label><span data-en="Above Clinical Threshold:" data-mr="क्लिनिकल मर्यादेपेक्षा वर:">Above Clinical Threshold:</span></label>
+                            <span class="${response.results.isAboveThreshold ? 'text-danger' : 'text-success'}">
+                                ${response.results.isAboveThreshold ? 'Yes' : 'No'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Crisis Indicators -->
+                ${response.crisisIndicators.hasCrisisAlerts ? `
+                    <div class="detail-section crisis-section">
+                        <h4 style="color: #ef4444;"><span data-en="🚨 Crisis Indicators" data-mr="🚨 संकट सूचक">🚨 Crisis Indicators</span></h4>
+                        <div class="crisis-alerts">
+                            ${response.crisisIndicators.crisisAlerts.map(alert => `
+                                <div class="crisis-alert-detail">
+                                    <div class="alert-type">${alert.type}</div>
+                                    <div class="alert-severity">Severity: ${alert.severity}</div>
+                                    <div class="alert-message">${alert.message}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        ${response.crisisIndicators.requiresImmediateAttention ? 
+                            '<div class="immediate-attention"><strong>⚠️ Requires Immediate Attention</strong></div>' : ''
+                        }
+                    </div>
+                ` : ''}
+
+                <!-- User Description -->
+                ${response.userDescription ? `
+                    <div class="detail-section">
+                        <h4><span data-en="User's Additional Notes" data-mr="वापरकर्त्याच्या अतिरिक्त टिप्पण्या">User's Additional Notes</span></h4>
+                        <div class="user-description-box">
+                            ${response.userDescription}
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Detailed Responses -->
+                <div class="detail-section">
+                    <h4><span data-en="Detailed Responses" data-mr="तपशीलवार प्रतिसाद">Detailed Responses</span></h4>
+                    <div class="responses-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th><span data-en="Question" data-mr="प्रश्न">Question</span></th>
+                                    <th><span data-en="Response" data-mr="प्रतिसाद">Response</span></th>
+                                    <th><span data-en="Score" data-mr="गुण">Score</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${response.responses.map(resp => `
+                                    <tr>
+                                        <td>${resp.questionText}</td>
+                                        <td>${this.getResponseText(resp.response)}</td>
+                                        <td>${resp.response}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Admin Actions -->
+                <div class="detail-section">
+                    <h4><span data-en="Admin Actions" data-mr="प्रशासक क्रिया">Admin Actions</span></h4>
+                    <div class="admin-actions">
+                        <div class="action-group">
+                            <label for="statusSelect"><span data-en="Update Status:" data-mr="स्थिती अपडेट करा:">Update Status:</span></label>
+                            <select id="statusSelect">
+                                <option value="completed" ${response.status === 'completed' ? 'selected' : ''}>Completed</option>
+                                <option value="reviewed" ${response.status === 'reviewed' ? 'selected' : ''}>Reviewed</option>
+                                <option value="follow_up_needed" ${response.status === 'follow_up_needed' ? 'selected' : ''}>Follow-up Needed</option>
+                                <option value="resolved" ${response.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                            </select>
+                        </div>
+                        <div class="action-group">
+                            <label for="adminNoteInput"><span data-en="Add Admin Note:" data-mr="प्रशासक टिप्पणी जोडा:">Add Admin Note:</span></label>
+                            <textarea id="adminNoteInput" placeholder="Enter admin note..." rows="3"></textarea>
+                        </div>
+                        <div class="action-group">
+                            <label for="counselorAssign"><span data-en="Assign Counselor:" data-mr="समुपदेशक नियुक्त करा:">Assign Counselor:</span></label>
+                            <input type="text" id="counselorAssign" placeholder="Counselor name or ID" value="${response.counselorAssigned || ''}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Previous Admin Notes -->
+                ${response.adminNotes && response.adminNotes.length > 0 ? `
+                    <div class="detail-section">
+                        <h4><span data-en="Admin Notes History" data-mr="प्रशासक टिप्पण्यांचा इतिहास">Admin Notes History</span></h4>
+                        <div class="admin-notes-history">
+                            ${response.adminNotes.map(note => `
+                                <div class="admin-note">
+                                    <div class="note-header">
+                                        <span class="note-author">${note.addedBy}</span>
+                                        <span class="note-date">${new Date(note.addedAt).toLocaleString()}</span>
+                                    </div>
+                                    <div class="note-content">${note.note}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
+    async updateScreeningStatus() {
+        if (!this.selectedResponseId) return;
+
+        const status = document.getElementById('statusSelect').value;
+        const adminNote = document.getElementById('adminNoteInput').value.trim();
+        const counselorAssigned = document.getElementById('counselorAssign').value.trim();
+
+        try {
+            const response = await fetch(`/api/screening-responses/admin/response/${this.selectedResponseId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    status,
+                    adminNote: adminNote || undefined,
+                    adminUser: this.getCurrentAdminUser(),
+                    counselorAssigned: counselorAssigned || undefined
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                this.showSuccess('Response updated successfully');
+                this.closeScreeningDetailModal();
+                this.loadScreeningResponses(this.currentPage);
+            } else {
+                this.showError('Failed to update response');
+            }
+        } catch (error) {
+            console.error('Error updating response:', error);
+            this.showError('Error updating response');
+        }
+    }
+
+    async handleCrisisResponse(responseId) {
+        if (confirm('This will mark the crisis as being handled. Continue?')) {
+            try {
+                const response = await fetch(`/api/screening-responses/admin/response/${responseId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: 'reviewed',
+                        adminNote: 'Crisis response initiated',
+                        adminUser: this.getCurrentAdminUser()
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    this.showSuccess('Crisis response recorded');
+                    this.loadScreeningResponses(this.currentPage);
+                    this.loadScreeningOverview();
+                } else {
+                    this.showError('Failed to update crisis response');
+                }
+            } catch (error) {
+                console.error('Error handling crisis response:', error);
+                this.showError('Error handling crisis response');
+            }
+        }
+    }
+
+    filterScreeningResponses() {
+        const toolFilter = document.getElementById('toolFilter').value;
+        const severityFilter = document.getElementById('severityFilter').value;
+        const statusFilter = document.getElementById('statusFilter').value;
+        const crisisOnly = document.getElementById('crisisOnlyFilter').checked;
+
+        this.currentFilters = {};
+        if (toolFilter) this.currentFilters.toolName = toolFilter;
+        if (severityFilter) this.currentFilters.severityLevel = severityFilter;
+        if (statusFilter) this.currentFilters.status = statusFilter;
+        if (crisisOnly) this.currentFilters.crisisOnly = 'true';
+
+        this.loadScreeningResponses(1);
+    }
+
+    updatePagination(pagination) {
+        this.totalPages = pagination.totalPages;
+        
+        document.getElementById('paginationInfo').innerHTML = 
+            `<span data-en="Showing ${((pagination.currentPage - 1) * 20) + 1}-${Math.min(pagination.currentPage * 20, pagination.totalCount)} of ${pagination.totalCount} responses" 
+                   data-mr="${((pagination.currentPage - 1) * 20) + 1}-${Math.min(pagination.currentPage * 20, pagination.totalCount)} पैकी ${pagination.totalCount} प्रतिसाद दाखवत आहे">
+                Showing ${((pagination.currentPage - 1) * 20) + 1}-${Math.min(pagination.currentPage * 20, pagination.totalCount)} of ${pagination.totalCount} responses
+            </span>`;
+
+        document.getElementById('prevPageBtn').disabled = !pagination.hasPrev;
+        document.getElementById('nextPageBtn').disabled = !pagination.hasNext;
+
+        // Update page numbers
+        const pageNumbers = document.getElementById('pageNumbers');
+        let pagesHtml = '';
+        const startPage = Math.max(1, pagination.currentPage - 2);
+        const endPage = Math.min(pagination.totalPages, pagination.currentPage + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+            pagesHtml += `
+                <button class="page-btn ${i === pagination.currentPage ? 'active' : ''}" 
+                        onclick="screeningManager.loadScreeningResponses(${i})">
+                    ${i}
+                </button>
+            `;
+        }
+        pageNumbers.innerHTML = pagesHtml;
+    }
+
+    changePage(direction) {
+        const newPage = this.currentPage + direction;
+        if (newPage >= 1 && newPage <= this.totalPages) {
+            this.loadScreeningResponses(newPage);
+        }
+    }
+
+    closeScreeningDetailModal() {
+        document.getElementById('screeningDetailModal').style.display = 'none';
+        this.selectedResponseId = null;
+    }
+
+    // Utility functions
+    getRiskLevel(response) {
+        if (response.crisisIndicators.requiresImmediateAttention) return 'critical';
+        if (response.crisisIndicators.hasCrisisAlerts) return 'high';
+        if (['severe', 'moderately_severe'].includes(response.results.severityLevel)) return 'elevated';
+        if (response.results.severityLevel === 'moderate') return 'moderate';
+        return 'low';
+    }
+
+    getRiskColor(riskLevel) {
+        const colors = {
+            critical: '#dc2626',
+            high: '#ea580c',
+            elevated: '#d97706',
+            moderate: '#ca8a04',
+            low: '#16a34a'
+        };
+        return colors[riskLevel] || '#6b7280';
+    }
+
+    maskEmail(email) {
+        const [username, domain] = email.split('@');
+        const maskedUsername = username.length > 3 ? 
+            username.substring(0, 2) + '*'.repeat(username.length - 2) : 
+            username;
+        return `${maskedUsername}@${domain}`;
+    }
+
+    formatSeverityLevel(level) {
+        const levels = {
+            minimal: 'Minimal',
+            mild: 'Mild',
+            moderate: 'Moderate',
+            moderately_severe: 'Moderately Severe',
+            severe: 'Severe',
+            normal: 'Normal',
+            distressed: 'Distressed'
+        };
+        return levels[level] || level;
+    }
+
+    formatStatus(status) {
+        const statuses = {
+            completed: 'Completed',
+            reviewed: 'Reviewed',
+            follow_up_needed: 'Follow-up Needed',
+            resolved: 'Resolved'
+        };
+        return statuses[status] || status;
+    }
+
+    getResponseText(value) {
+        const responses = {
+            0: 'Not at all',
+            1: 'Several days',
+            2: 'More than half the days',
+            3: 'Nearly every day'
+        };
+        return responses[value] || value;
+    }
+
+    getCurrentAdminUser() {
+        return localStorage.getItem('adminUsername') || 'admin';
+    }
+
+    showSuccess(message) {
+        // Implement success notification
+        console.log('Success:', message);
+    }
+
+    showError(message) {
+        // Implement error notification
+        console.error('Error:', message);
+    }
+
+    // Auto-refresh functionality for real-time updates
+    startAutoRefresh() {
+        console.log('🔄 Starting auto-refresh for screening responses...');
+        
+        // Clear any existing interval
+        if (this.autoRefreshInterval) {
+            clearInterval(this.autoRefreshInterval);
+        }
+        
+        // Refresh every 30 seconds
+        this.autoRefreshInterval = setInterval(() => {
+            console.log('🔄 Auto-refreshing screening data...');
+            this.loadScreeningOverview();
+            this.loadScreeningResponses(this.currentPage);
+        }, 30000);
+        
+        // Also refresh when window gains focus (user comes back to tab)
+        window.addEventListener('focus', () => {
+            console.log('👁️ Window focused - refreshing screening data...');
+            this.loadScreeningOverview();
+            this.loadScreeningResponses(this.currentPage);
+        });
+    }
+
+    stopAutoRefresh() {
+        if (this.autoRefreshInterval) {
+            clearInterval(this.autoRefreshInterval);
+            this.autoRefreshInterval = null;
+            console.log('⏹️ Auto-refresh stopped');
+        }
+    }
+}
+
+// Initialize screening responses manager
+const screeningManager = new ScreeningResponsesManager();
+
+// Add to existing admin dashboard initialization
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Screening responses manager initialized');
+    
+    // Load screening responses when the section is shown
+    const originalShowAdminSection = window.showAdminSection;
+    window.showAdminSection = function(section) {
+        console.log('Switching to admin section:', section);
+        
+        if (originalShowAdminSection) {
+            originalShowAdminSection(section);
+        }
+        
+        if (section === 'screening-responses') {
+            console.log('Loading screening responses section...');
+            
+            // Show loading indicator
+            const tbody = document.getElementById('screeningResponsesTableBody');
+            if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 20px; color: #8b5cf6;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                <div style="width: 20px; height: 20px; border: 2px solid #8b5cf6; border-top: 2px solid transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                                <span>Loading screening responses...</span>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            // Load data
+            screeningManager.loadScreeningOverview();
+            screeningManager.loadScreeningResponses();
+            
+            // Set up auto-refresh for real-time updates
+            screeningManager.startAutoRefresh();
+        }
+    };
+    
+    // Add CSS for loading spinner and notifications
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+});
+
+// Global functions for screening responses
+window.filterScreeningResponses = () => screeningManager.filterScreeningResponses();
+window.changePage = (direction) => screeningManager.changePage(direction);
+window.closeScreeningDetailModal = () => screeningManager.closeScreeningDetailModal();
+window.updateScreeningStatus = () => screeningManager.updateScreeningStatus();
+
+// Test function to manually load screening data (for debugging)
+window.testScreeningData = async function() {
+    console.log('🧪 Testing screening data loading...');
+    
+    try {
+        // Test API endpoints
+        const overviewResponse = await fetch('/api/screening-responses/admin/overview');
+        const overviewData = await overviewResponse.json();
+        console.log('✅ Overview API:', overviewData);
+        
+        const responsesResponse = await fetch('/api/screening-responses/admin/responses?page=1&limit=20&sortBy=completedAt&sortOrder=desc');
+        const responsesData = await responsesResponse.json();
+        console.log('✅ Responses API:', responsesData);
+        
+        // Test DOM elements
+        const elements = {
+            totalScreenings: document.getElementById('totalScreeningsCount'),
+            crisisScreenings: document.getElementById('crisisScreeningsCount'),
+            avgScore: document.getElementById('avgScreeningScore'),
+            uniqueUsers: document.getElementById('uniqueScreeningUsers'),
+            tableBody: document.getElementById('screeningResponsesTableBody')
+        };
+        
+        console.log('📋 DOM Elements:', Object.keys(elements).map(key => ({
+            [key]: !!elements[key]
+        })));
+        
+        // Manually update stats
+        if (overviewData.success && elements.totalScreenings) {
+            screeningManager.updateOverviewStats(overviewData.data.overview);
+            console.log('✅ Stats updated manually');
+        }
+        
+        // Manually update table
+        if (responsesData.success && elements.tableBody) {
+            screeningManager.displayScreeningResponses(responsesData.data.responses);
+            console.log('✅ Table updated manually');
+        }
+        
+        console.log('🎉 Test completed successfully!');
+        
+    } catch (error) {
+        console.error('❌ Test failed:', error);
+    }
+};

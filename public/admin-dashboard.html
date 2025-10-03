@@ -100,6 +100,9 @@
             <button class="admin-nav-btn" onclick="showAdminSection('monitoring')" data-section="monitoring">
                 🔍 <span data-en="Live Monitoring" data-mr="थेट निरीक्षण">Live Monitoring</span>
             </button>
+            <button class="admin-nav-btn" onclick="showAdminSection('screening-responses')" data-section="screening-responses">
+                🧠 <span data-en="Screening Responses" data-mr="स्क्रीनिंग प्रतिसाद">Screening Responses</span>
+            </button>
             <button class="admin-nav-btn" onclick="showAdminSection('reports')" data-section="reports">
                 📋 <span data-en="Reports" data-mr="अहवाल">Reports</span>
             </button>
@@ -270,6 +273,145 @@
                     <div class="system-status-grid" id="systemStatusGrid">
                         <!-- System status indicators will be populated here -->
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screening Responses Section -->
+        <div id="screening-responses" class="admin-content-area">
+            <div class="screening-responses-header">
+                <h3><span data-en="Mental Health Screening Responses" data-mr="मानसिक आरोग्य स्क्रीनिंग प्रतिसाद">Mental Health Screening Responses</span></h3>
+                <div class="screening-controls">
+                    <div class="filter-controls">
+                        <select id="toolFilter" onchange="filterScreeningResponses()">
+                            <option value=""><span data-en="All Tools" data-mr="सर्व साधने">All Tools</span></option>
+                            <option value="PHQ-9">PHQ-9 (Depression)</option>
+                            <option value="GAD-7">GAD-7 (Anxiety)</option>
+                            <option value="GHQ-12">GHQ-12 (General Health)</option>
+                        </select>
+                        <select id="severityFilter" onchange="filterScreeningResponses()">
+                            <option value=""><span data-en="All Severities" data-mr="सर्व तीव्रता">All Severities</span></option>
+                            <option value="minimal">Minimal</option>
+                            <option value="mild">Mild</option>
+                            <option value="moderate">Moderate</option>
+                            <option value="moderately_severe">Moderately Severe</option>
+                            <option value="severe">Severe</option>
+                        </select>
+                        <select id="statusFilter" onchange="filterScreeningResponses()">
+                            <option value=""><span data-en="All Status" data-mr="सर्व स्थिती">All Status</span></option>
+                            <option value="completed">Completed</option>
+                            <option value="reviewed">Reviewed</option>
+                            <option value="follow_up_needed">Follow-up Needed</option>
+                            <option value="resolved">Resolved</option>
+                        </select>
+                        <label>
+                            <input type="checkbox" id="crisisOnlyFilter" onchange="filterScreeningResponses()">
+                            <span data-en="Crisis Alerts Only" data-mr="केवळ संकट इशारे">Crisis Alerts Only</span>
+                        </label>
+                    </div>
+                    <button class="refresh-btn" onclick="loadScreeningResponses()">
+                        🔄 <span data-en="Refresh" data-mr="रीफ्रेश">Refresh</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Crisis Alerts Summary -->
+            <div id="crisisAlertsSummary" class="crisis-alerts-summary" style="display: none;">
+                <h4 style="color: #ef4444; margin-bottom: 15px;">🚨 <span data-en="Active Crisis Alerts" data-mr="सक्रिय संकट इशारे">Active Crisis Alerts</span></h4>
+                <div id="crisisAlertsList" class="crisis-alerts-list"></div>
+            </div>
+
+            <!-- Screening Statistics -->
+            <div class="screening-stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h3 id="totalScreeningsCount">0</h3>
+                        <p><span data-en="Total Screenings (30 days)" data-mr="एकूण स्क्रीनिंग (३० दिवस)">Total Screenings (30 days)</span></p>
+                    </div>
+                </div>
+                <div class="stat-card crisis">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-content">
+                        <h3 id="crisisScreeningsCount">0</h3>
+                        <p><span data-en="Crisis Alerts" data-mr="संकट इशारे">Crisis Alerts</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📈</div>
+                    <div class="stat-content">
+                        <h3 id="avgScreeningScore">0%</h3>
+                        <p><span data-en="Average Score" data-mr="सरासरी गुण">Average Score</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3 id="uniqueScreeningUsers">0</h3>
+                        <p><span data-en="Unique Users" data-mr="अनन्य वापरकर्ते">Unique Users</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screening Responses Table -->
+            <div class="screening-responses-table-container">
+                <table class="screening-responses-table">
+                    <thead>
+                        <tr>
+                            <th><span data-en="Date/Time" data-mr="दिनांक/वेळ">Date/Time</span></th>
+                            <th><span data-en="User" data-mr="वापरकर्ता">User</span></th>
+                            <th><span data-en="Tool" data-mr="साधन">Tool</span></th>
+                            <th><span data-en="Score" data-mr="गुण">Score</span></th>
+                            <th><span data-en="Severity" data-mr="तीव्रता">Severity</span></th>
+                            <th><span data-en="Crisis" data-mr="संकट">Crisis</span></th>
+                            <th><span data-en="Status" data-mr="स्थिती">Status</span></th>
+                            <th><span data-en="Actions" data-mr="क्रिया">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="screeningResponsesTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align: center; padding: 20px; color: #9ca3af;">
+                                <span data-en="Loading screening responses..." data-mr="स्क्रीनिंग प्रतिसाद लोड करत आहे...">Loading screening responses...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info">
+                    <span id="paginationInfo"><span data-en="Showing 0 of 0 responses" data-mr="० पैकी ० प्रतिसाद दाखवत आहे">Showing 0 of 0 responses</span></span>
+                </div>
+                <div class="pagination-controls">
+                    <button id="prevPageBtn" onclick="changePage(-1)" disabled>
+                        ← <span data-en="Previous" data-mr="मागील">Previous</span>
+                    </button>
+                    <span id="pageNumbers"></span>
+                    <button id="nextPageBtn" onclick="changePage(1)" disabled>
+                        <span data-en="Next" data-mr="पुढील">Next</span> →
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screening Response Detail Modal -->
+        <div id="screeningDetailModal" class="modal" style="display: none;">
+            <div class="modal-content screening-detail-modal">
+                <div class="modal-header">
+                    <h3><span data-en="Screening Response Details" data-mr="स्क्रीनिंग प्रतिसाद तपशील">Screening Response Details</span></h3>
+                    <button class="close-btn" onclick="closeScreeningDetailModal()">×</button>
+                </div>
+                <div class="modal-body" id="screeningDetailContent">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeScreeningDetailModal()">
+                        <span data-en="Close" data-mr="बंद करा">Close</span>
+                    </button>
+                    <button class="btn btn-primary" onclick="updateScreeningStatus()">
+                        <span data-en="Update Status" data-mr="स्थिती अपडेट करा">Update Status</span>
+                    </button>
                 </div>
             </div>
         </div>

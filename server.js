@@ -9,6 +9,7 @@ const RealTimeMonitoringService = require('./services/realTimeMonitoringService'
 const PerformanceOptimizationService = require('./services/performanceOptimizationService');
 const CachingService = require('./services/cachingService');
 const ApiBatchingService = require('./services/apiBatchingService');
+const mongoose = require('mongoose');
 require('dotenv').config();
 
 
@@ -104,6 +105,7 @@ app.use(analyticsMiddleware.trackApiUsage);
 
 // Serve static files
 app.use(express.static('public'));
+app.use('/music', express.static('music'));
 
 // API Routes with error handling middleware
 const speechToTextRoutes = require('./routes/speechToText');
@@ -113,8 +115,10 @@ const authRoutes = require('./routes/auth');
 const analyticsRoutes = require('./routes/analytics');
 const monitoringRoutes = require('./routes/monitoring');
 const screeningRoutes = require('./routes/screening');
+const screeningResponseRoutes = require('./routes/screeningResponses');
 const voiceConversationRoutes = require('./routes/voiceConversation');
 const bookingRoutes = require('./routes/booking');
+const peerSupportRoutes = require('./routes/peerSupport');
 const { router: performanceRoutes, initializeServices } = require('./routes/performanceRoutes');
 
 // Initialize performance routes with services
@@ -160,6 +164,13 @@ app.use('/api/screening',
   screeningRoutes
 );
 
+// Screening responses routes
+app.use('/api/screening-responses', 
+  middleware.handleRateLimit,
+  middleware.handleServiceUnavailable('screening-responses'),
+  screeningResponseRoutes
+);
+
 // Voice conversation routes
 app.use('/api/voice-conversation', 
   middleware.handleRateLimit,
@@ -172,6 +183,13 @@ app.use('/api/booking',
   middleware.handleRateLimit,
   middleware.handleServiceUnavailable('booking'),
   bookingRoutes
+);
+
+// Peer Support routes
+app.use('/api/peer-support', 
+  middleware.handleRateLimit,
+  middleware.handleServiceUnavailable('peer-support'),
+  peerSupportRoutes
 );
 
 // Enhanced health check endpoint with error handling details
@@ -193,7 +211,8 @@ app.get('/api/status', (req, res) => {
       huggingface: 'deprecated',
       screening: 'operational',
       voiceConversation: 'operational',
-      booking: 'operational'
+      booking: 'operational',
+      peerSupport: 'operational'
     },
     timestamp: new Date().toISOString()
   });
@@ -209,7 +228,8 @@ app.get('/', (req, res) => {
       status: '/api/status',
       screening: '/api/screening',
       voiceConversation: '/api/voice-conversation',
-      booking: '/api/booking'
+      booking: '/api/booking',
+      peerSupport: '/api/peer-support'
     }
   });
 });
@@ -238,6 +258,11 @@ process.on('SIGTERM', () => {
     realTimeMonitoring.destroy();
   }
   
+  // Close MongoDB connection
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection closed');
+  });
+  
   process.exit(0);
 });
 
@@ -260,19 +285,47 @@ process.on('SIGINT', () => {
 let server;
 let realTimeMonitoring;
 
+// MongoDB Connection
+async function connectToMongoDB() {
+  try {
+    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/aarogyatech';
+    await mongoose.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+    });
+    console.log('✅ Connected to MongoDB successfully');
+    return true;
+  } catch (error) {
+    console.error('❌ MongoDB connection failed:', error.message);
+    console.log('⚠️  Screening responses will not be available without database connection');
+    return false;
+  }
+}
+
 if (process.env.NODE_ENV !== 'test') {
-  server = app.listen(PORT, () => {
-    console.log(`MindCare AI Backend server running on port ${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`Health check available at: http://localhost:${PORT}/health`);
-    
-    // Initialize real-time monitoring after server starts
-    realTimeMonitoring = new RealTimeMonitoringService(server, analyticsMiddleware.getAnalyticsService());
-    
-    // Make monitoring service available to routes
-    app.locals.realTimeMonitoring = realTimeMonitoring;
-    
-    console.log('Real-time monitoring service initialized');
+  // Connect to MongoDB first, then start server
+  connectToMongoDB().then((connected) => {
+    server = app.listen(PORT, () => {
+      console.log(`MindCare AI Backend server running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Health check available at: http://localhost:${PORT}/health`);
+      
+      if (connected) {
+        console.log('📊 Screening responses database ready');
+      } else {
+        console.log('⚠️  Running without screening responses database');
+      }
+      
+      // Initialize real-time monitoring after server starts
+      realTimeMonitoring = new RealTimeMonitoringService(server, analyticsMiddleware.getAnalyticsService());
+      
+      // Make monitoring service available to routes
+      app.locals.realTimeMonitoring = realTimeMonitoring;
+      
+      console.log('Real-time monitoring service initialized');
+    });
   });
 }
 
