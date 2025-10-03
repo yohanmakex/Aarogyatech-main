@@ -289,16 +289,34 @@ let realTimeMonitoring;
 async function connectToMongoDB() {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/aarogyatech';
+    
+    // Debug information
+    console.log('🔍 MongoDB Connection Debug:');
+    console.log('- NODE_ENV:', process.env.NODE_ENV);
+    console.log('- PORT:', process.env.PORT);
+    console.log('- MONGODB_URI exists:', !!process.env.MONGODB_URI);
+    console.log('- GROQ_API_KEY exists:', !!process.env.GROQ_API_KEY);
+    console.log('- URI type:', mongoUri.startsWith('mongodb+srv://') ? 'Atlas' : 'Local');
+    console.log('- URI length:', mongoUri.length);
+    
+    // Show first part of URI for verification (security safe)
+    if (process.env.MONGODB_URI) {
+      console.log('- URI preview:', mongoUri.substring(0, 30) + '...');
+    } else {
+      console.log('- Using default local URI');
+    }
+    
+    console.log('🔌 Attempting MongoDB connection...');
     await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      serverSelectionTimeoutMS: 10000, // Increased timeout for Atlas
       socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
     });
     console.log('✅ Connected to MongoDB successfully');
+    console.log('📊 Database name:', mongoose.connection.name);
     return true;
   } catch (error) {
     console.error('❌ MongoDB connection failed:', error.message);
+    console.error('❌ Full error:', error);
     console.log('⚠️  Screening responses will not be available without database connection');
     return false;
   }
