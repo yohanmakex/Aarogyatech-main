@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Playback Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .test-btn {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-btn:hover {
+            background: #7c3aed;
+        }
+        .status {
+            background: #2d1b4e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .playback-indicator {
+            display: none;
+            color: #10b981;
+            margin: 10px 0;
+        }
+        .audio-controls {
+            display: none;
+            margin: 10px 0;
+            gap: 10px;
+        }
+        .audio-controls button {
+            background: #4c1d95;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧠 MindCare Audio Playback Test</h1>
+        
+        <div class="status" id="status">
+            Status: Ready to test
+        </div>
+        
+        <div>
+            <button class="test-btn" onclick="testBasicPlayback()">Test Basic Audio Playback</button>
+            <button class="test-btn" onclick="testQueueManagement()">Test Queue Management</button>
+            <button class="test-btn" onclick="testVoiceToVoice()">Test Voice-to-Voice Flow</button>
+            <button class="test-btn" onclick="testControls()">Test Playback Controls</button>
+        </div>
+        
+        <div class="playback-indicator" id="playbackIndicator">
+            🔊 Playing audio...
+        </div>
+        
+        <div class="audio-controls" id="audioControls">
+            <button onclick="AudioPlaybackManager.pause()">Pause</button>
+            <button onclick="AudioPlaybackManager.resume()">Resume</button>
+            <button onclick="AudioPlaybackManager.stop()">Stop</button>
+        </div>
+        
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        // Simplified AudioPlaybackManager for testing
+        const AudioPlaybackManager = {
+            isPlaying: false,
+            playbackQueue: [],
+            
+            async initialize() {
+                console.log('AudioPlaybackManager initialized');
+                return true;
+            },
+            
+            async playText(text, options = {}) {
+                const playbackId = Date.now().toString();
+                console.log('Playing text:', text);
+                
+                this.showPlaybackIndicator();
+                this.isPlaying = true;
+                
+                // Simulate TTS API call
+                try {
+                    const response = await fetch('/api/text-to-speech/synthesize', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ text })
+                    });
+                    
+                    if (response.ok) {
+                        const audioBlob = await response.blob();
+                        const audioUrl = URL.createObjectURL(audioBlob);
+                        const audio = new Audio(audioUrl);
+                        
+                        audio.onended = () => {
+                            this.hidePlaybackIndicator();
+                            this.isPlaying = false;
+                            URL.revokeObjectURL(audioUrl);
+                        };
+                        
+                        await audio.play();
+                        updateStatus('✅ Audio playback successful');
+                    } else {
+                        throw new Error('TTS service unavailable');
+                    }
+                } catch (error) {
+                    console.error('Audio playback error:', error);
+                    updateStatus('❌ Audio playback failed: ' + error.message);
+                    this.hidePlaybackIndicator();
+                    this.isPlaying = false;
+                }
+                
+                return playbackId;
+            },
+            
+            showPlaybackIndicator() {
+                document.getElementById('playbackIndicator').style.display = 'block';
+                document.getElementById('audioControls').style.display = 'flex';
+            },
+            
+            hidePlaybackIndicator() {
+                document.getElementById('playbackIndicator').style.display = 'none';
+                document.getElementById('audioControls').style.display = 'none';
+            },
+            
+            pause() {
+                console.log('Pause requested');
+                updateStatus('⏸️ Playback paused');
+            },
+            
+            resume() {
+                console.log('Resume requested');
+                updateStatus('▶️ Playback resumed');
+            },
+            
+            stop() {
+                console.log('Stop requested');
+                this.hidePlaybackIndicator();
+                this.isPlaying = false;
+                updateStatus('⏹️ Playback stopped');
+            }
+        };
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = 'Status: ' + message;
+        }
+        
+        async function testBasicPlayback() {
+            updateStatus('Testing basic audio playback...');
+            await AudioPlaybackManager.playText('Hello! This is a test of the audio playback system.');
+        }
+        
+        async function testQueueManagement() {
+            updateStatus('Testing queue management...');
+            await AudioPlaybackManager.playText('First message in queue.');
+            setTimeout(() => AudioPlaybackManager.playText('Second message in queue.'), 1000);
+            setTimeout(() => AudioPlaybackManager.playText('Third message in queue.'), 2000);
+        }
+        
+        async function testVoiceToVoice() {
+            updateStatus('Testing voice-to-voice flow...');
+            await AudioPlaybackManager.playText('This simulates a voice-to-voice conversation response. After this plays, the system would be ready for your next voice input.');
+        }
+        
+        function testControls() {
+            updateStatus('Testing playback controls...');
+            AudioPlaybackManager.showPlaybackIndicator();
+            setTimeout(() => {
+                updateStatus('Controls test complete');
+                AudioPlaybackManager.hidePlaybackIndicator();
+            }, 3000);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await AudioPlaybackManager.initialize();
+            updateStatus('Audio system initialized - ready for testing');
+        });
+    </script>
+</body>
+</html>

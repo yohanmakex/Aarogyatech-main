@@ -1,0 +1,556 @@
+<!--
+  AarogyaTech - AI-powered Mental Health Assistant
+  Admin Dashboard Interface - Management Console
+  
+  Copyright (c) 2025 Rajiv Magadum
+  All rights reserved.
+  
+  This software is proprietary and confidential.
+  Unauthorized copying or distribution is strictly prohibited.
+  
+  Author: Rajiv Magadum
+  Email: rajiv.magadum@gmail.com
+  Date: 2025
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" type="image/svg+xml">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AarogyaTech Admin Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn active" onclick="switchLanguage('en')" id="langEn">EN</button>
+        <button class="language-btn" onclick="switchLanguage('mr')" id="langMr">मराठी</button>
+    </div>
+
+    <!-- Admin Login Overlay -->
+    <div id="adminLoginOverlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🧠 <span data-en="AarogyaTech Admin" data-mr="मानसिक काळजी प्रशासक">AarogyaTech Admin</span></h1>
+                <p><span data-en="Administrative Dashboard" data-mr="प्रशासकीय डॅशबोर्ड">Administrative Dashboard</span></p>
+            </div>
+            <form class="login-form" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label for="adminUsername"><span data-en="Username" data-mr="वापरकर्ता नाव">Username</span></label>
+                    <input type="text" id="adminUsername" data-placeholder-en="Enter username" data-placeholder-mr="वापरकर्ता नाव टाका" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword"><span data-en="Password" data-mr="पासवर्ड">Password</span></label>
+                    <input type="password" id="adminPassword" data-placeholder-en="Enter password" data-placeholder-mr="पासवर्ड टाका" placeholder="Enter password" required>
+                </div>
+                <div class="form-group">
+                    <label for="userRole"><span data-en="Role" data-mr="भूमिका">Role</span></label>
+                    <select id="userRole" required>
+                        <option value="admin" data-en="Administrator" data-mr="प्रशासक">Administrator</option>
+                        <option value="counselor" data-en="Counselor" data-mr="समुपदेशक">Counselor</option>
+                    </select>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span data-en="Access Dashboard" data-mr="डॅशबोर्डमध्ये प्रवेश करा">Access Dashboard</span>
+                </button>
+            </form>
+            <div class="register-link">
+                <p><span data-en="Demo: admin/admin123! or counselor/counselor123!" data-mr="डेमो: admin/admin123! किंवा counselor/counselor123!">Demo: admin/admin123! or counselor/counselor123!</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Admin Dashboard -->
+    <div id="adminDashboard" class="admin-container" style="display: none;">
+        <!-- Admin Header -->
+        <div class="admin-header">
+            <div class="admin-title">
+                <h1>🧠 <span data-en="AarogyaTech Dashboard" data-mr="मानसिक काळजी डॅशबोर्ड">AarogyaTech Dashboard</span></h1>
+                <p><span data-en="Student Mental Health Analytics & Management" data-mr="विद्यार्थी मानसिक आरोग्य विश्लेषण आणि व्यवस्थापन">Student Mental Health Analytics & Management</span></p>
+            </div>
+            <div class="admin-user-info">
+                <div class="user-details">
+                    <span><span data-en="Welcome," data-mr="स्वागत,">Welcome,</span> <strong id="adminUserName">Admin</strong></span>
+                    <span class="user-role" id="adminUserRole">Administrator</span>
+                </div>
+                <button class="logout-btn" onclick="adminLogout()">
+                    <span data-en="Logout" data-mr="बाहेर पडा">Logout</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Admin Navigation -->
+        <div class="admin-nav">
+            <button class="admin-nav-btn active" onclick="showAdminSection('overview')" data-section="overview">
+                📊 <span data-en="Overview" data-mr="सारांश">Overview</span>
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminSection('analytics')" data-section="analytics">
+                📈 <span data-en="Analytics" data-mr="विश्लेषण">Analytics</span>
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminSection('users')" data-section="users" id="usersNavBtn">
+                👥 <span data-en="User Management" data-mr="वापरकर्ता व्यवस्थापन">User Management</span>
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminSection('bookings')" data-section="bookings">
+                📅 <span data-en="Booking Management" data-mr="बुकिंग व्यवस्थापन">Booking Management</span>
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminSection('monitoring')" data-section="monitoring">
+                🔍 <span data-en="Live Monitoring" data-mr="थेट निरीक्षण">Live Monitoring</span>
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminSection('reports')" data-section="reports">
+                📋 <span data-en="Reports" data-mr="अहवाल">Reports</span>
+            </button>
+            <button class="admin-nav-btn" onclick="showAdminSection('settings')" data-section="settings">
+                ⚙️ <span data-en="Settings" data-mr="सेटिंग्ज">Settings</span>
+            </button>
+        </div>
+
+        <!-- Overview Section -->
+        <div id="overview" class="admin-content-area active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-content">
+                        <h3 id="totalUsersCount">0</h3>
+                        <p><span data-en="Total Users Today" data-mr="आजचे एकूण वापरकर्ते">Total Users Today</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💬</div>
+                    <div class="stat-content">
+                        <h3 id="totalConversationsCount">0</h3>
+                        <p><span data-en="Conversations" data-mr="संभाषणे">Conversations</span></p>
+                    </div>
+                </div>
+                <div class="stat-card crisis">
+                    <div class="stat-icon">🚨</div>
+                    <div class="stat-content">
+                        <h3 id="crisisAlertsCount">0</h3>
+                        <p><span data-en="Crisis Alerts" data-mr="संकट इशारे">Crisis Alerts</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-content">
+                        <h3 id="avgSentimentScore">0.0</h3>
+                        <p><span data-en="Avg Sentiment" data-mr="सरासरी भावना">Avg Sentiment</span></p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📅</div>
+                    <div class="stat-content">
+                        <h3 id="totalBookingsCount">0</h3>
+                        <p><span data-en="Counseling Bookings" data-mr="समुपदेशन बुकिंग">Counseling Bookings</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <h3><span data-en="Daily Usage Trends" data-mr="दैनिक वापर ट्रेंड">Daily Usage Trends</span></h3>
+                    <canvas id="usageChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3><span data-en="Sentiment Analysis" data-mr="भावना विश्लेषण">Sentiment Analysis</span></h3>
+                    <canvas id="sentimentChart"></canvas>
+                </div>
+            </div>
+
+            <div class="recent-activity">
+                <h3><span data-en="Recent Activity" data-mr="अलीकडील क्रियाकलाप">Recent Activity</span></h3>
+                <div class="activity-list" id="recentActivityList">
+                    <!-- Activity items will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div id="analytics" class="admin-content-area">
+            <div class="analytics-controls">
+                <div class="date-range-selector">
+                    <label><span data-en="Date Range:" data-mr="दिनांक श्रेणी:">Date Range:</span></label>
+                    <select id="dateRangeSelect" onchange="updateAnalytics()">
+                        <option value="today" data-en="Today" data-mr="आज">Today</option>
+                        <option value="week" data-en="This Week" data-mr="हा आठवडा">This Week</option>
+                        <option value="month" data-en="This Month" data-mr="हा महिना">This Month</option>
+                        <option value="custom" data-en="Custom Range" data-mr="सानुकूल श्रेणी">Custom Range</option>
+                    </select>
+                </div>
+                <div class="custom-date-inputs" id="customDateInputs" style="display: none;">
+                    <input type="date" id="startDate">
+                    <input type="date" id="endDate">
+                    <button onclick="updateAnalytics()" class="update-btn">
+                        <span data-en="Update" data-mr="अपडेट करा">Update</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="analytics-grid">
+                <div class="chart-container large">
+                    <h3><span data-en="Conversation Topics Trending" data-mr="संभाषण विषय ट्रेंडिंग">Conversation Topics Trending</span></h3>
+                    <canvas id="topicsChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3><span data-en="Peak Usage Hours" data-mr="सर्वाधिक वापराचे तास">Peak Usage Hours</span></h3>
+                    <canvas id="peakHoursChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <h3><span data-en="Crisis Intervention Stats" data-mr="संकट हस्तक्षेप आकडेवारी">Crisis Intervention Stats</span></h3>
+                    <canvas id="crisisStatsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Management Section (Admin Only) -->
+        <div id="users" class="admin-content-area">
+            <div class="users-header">
+                <h3><span data-en="User Management" data-mr="वापरकर्ता व्यवस्थापन">User Management</span></h3>
+                <button class="add-user-btn" onclick="showAddUserModal()">
+                    ➕ <span data-en="Add User" data-mr="वापरकर्ता जोडा">Add User</span>
+                </button>
+            </div>
+            
+            <div class="users-table-container">
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th><span data-en="Username" data-mr="वापरकर्ता नाव">Username</span></th>
+                            <th><span data-en="Full Name" data-mr="पूर्ण नाव">Full Name</span></th>
+                            <th><span data-en="Email" data-mr="ईमेल">Email</span></th>
+                            <th><span data-en="Role" data-mr="भूमिका">Role</span></th>
+                            <th><span data-en="Status" data-mr="स्थिती">Status</span></th>
+                            <th><span data-en="Last Login" data-mr="शेवटचे लॉगिन">Last Login</span></th>
+                            <th><span data-en="Actions" data-mr="क्रिया">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- User rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Live Monitoring Section -->
+        <div id="monitoring" class="admin-content-area">
+            <div class="monitoring-header">
+                <h3><span data-en="Live Monitoring" data-mr="थेट निरीक्षण">Live Monitoring</span></h3>
+                <div class="monitoring-controls">
+                    <button class="refresh-btn" onclick="refreshMonitoring()">
+                        🔄 <span data-en="Refresh" data-mr="रिफ्रेश करा">Refresh</span>
+                    </button>
+                    <div class="auto-refresh-toggle">
+                        <label>
+                            <input type="checkbox" id="autoRefreshToggle" onchange="toggleAutoRefresh()">
+                            <span data-en="Auto-refresh" data-mr="स्वयं-रिफ्रेश">Auto-refresh</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="monitoring-grid">
+                <div class="active-users-panel">
+                    <h4><span data-en="Active Users" data-mr="सक्रिय वापरकर्ते">Active Users</span> (<span id="activeUsersCount">0</span>)</h4>
+                    <div class="active-users-list" id="activeUsersList">
+                        <!-- Active users will be populated here -->
+                    </div>
+                </div>
+
+                <div class="crisis-alerts-panel">
+                    <h4><span data-en="Crisis Alerts" data-mr="संकट इशारे">Crisis Alerts</span></h4>
+                    <div class="crisis-alerts-list" id="crisisAlertsList">
+                        <!-- Crisis alerts will be populated here -->
+                    </div>
+                </div>
+
+                <div class="system-status-panel">
+                    <h4><span data-en="System Status" data-mr="सिस्टम स्थिती">System Status</span></h4>
+                    <div class="system-status-grid" id="systemStatusGrid">
+                        <!-- System status indicators will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="admin-content-area">
+            <div class="reports-header">
+                <h3><span data-en="Reports & Export" data-mr="अहवाल आणि निर्यात">Reports & Export</span></h3>
+            </div>
+
+            <div class="reports-grid">
+                <div class="report-card">
+                    <h4><span data-en="Usage Report" data-mr="वापर अहवाल">Usage Report</span></h4>
+                    <p><span data-en="Detailed analytics on user engagement and platform usage" data-mr="वापरकर्ता सहभाग आणि प्लॅटफॉर्म वापरावर तपशीलवार विश्लेषण">Detailed analytics on user engagement and platform usage</span></p>
+                    <button class="generate-report-btn" onclick="generateReport('usage')">
+                        📊 <span data-en="Generate" data-mr="तयार करा">Generate</span>
+                    </button>
+                </div>
+
+                <div class="report-card">
+                    <h4><span data-en="Mental Health Trends" data-mr="मानसिक आरोग्य ट्रेंड">Mental Health Trends</span></h4>
+                    <p><span data-en="Sentiment analysis and mental health indicators over time" data-mr="कालांतराने भावना विश्लेषण आणि मानसिक आरोग्य निर्देशक">Sentiment analysis and mental health indicators over time</span></p>
+                    <button class="generate-report-btn" onclick="generateReport('mental-health')">
+                        🧠 <span data-en="Generate" data-mr="तयार करा">Generate</span>
+                    </button>
+                </div>
+
+                <div class="report-card">
+                    <h4><span data-en="Crisis Interventions" data-mr="संकट हस्तक्षेप">Crisis Interventions</span></h4>
+                    <p><span data-en="Summary of crisis situations and intervention effectiveness" data-mr="संकट परिस्थिती आणि हस्तक्षेप प्रभावीतेचा सारांश">Summary of crisis situations and intervention effectiveness</span></p>
+                    <button class="generate-report-btn" onclick="generateReport('crisis')">
+                        🚨 <span data-en="Generate" data-mr="तयार करा">Generate</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="export-options">
+                <h4><span data-en="Export Options" data-mr="निर्यात पर्याय">Export Options</span></h4>
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportData('csv')">
+                        📄 <span data-en="Export CSV" data-mr="CSV निर्यात करा">Export CSV</span>
+                    </button>
+                    <button class="export-btn" onclick="exportData('pdf')">
+                        📋 <span data-en="Export PDF" data-mr="PDF निर्यात करा">Export PDF</span>
+                    </button>
+                    <button class="export-btn" onclick="exportData('json')">
+                        📊 <span data-en="Export JSON" data-mr="JSON निर्यात करा">Export JSON</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Management Section -->
+        <div id="bookings" class="admin-content-area">
+            <div class="bookings-header">
+                <h3><span data-en="Counseling Appointment Management" data-mr="समुपदेशन भेट व्यवस्थापन">Counseling Appointment Management</span></h3>
+                <div class="bookings-controls">
+                    <button class="refresh-bookings-btn" onclick="refreshBookings()">
+                        🔄 <span data-en="Refresh" data-mr="रिफ्रेश करा">Refresh</span>
+                    </button>
+                    <button class="export-bookings-btn" onclick="exportBookings()">
+                        💾 <span data-en="Export" data-mr="निर्यात करा">Export</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Booking Stats Summary -->
+            <div class="booking-stats-summary">
+                <div class="booking-stat-card pending">
+                    <div class="stat-number" id="pendingBookingsCount">0</div>
+                    <div class="stat-label"><span data-en="Pending" data-mr="प्रतिक्षित">Pending</span></div>
+                </div>
+                <div class="booking-stat-card confirmed">
+                    <div class="stat-number" id="confirmedBookingsCount">0</div>
+                    <div class="stat-label"><span data-en="Confirmed" data-mr="पुष्टीकृत">Confirmed</span></div>
+                </div>
+                <div class="booking-stat-card completed">
+                    <div class="stat-number" id="completedBookingsCount">0</div>
+                    <div class="stat-label"><span data-en="Completed" data-mr="पूर्ण">Completed</span></div>
+                </div>
+                <div class="booking-stat-card cancelled">
+                    <div class="stat-number" id="cancelledBookingsCount">0</div>
+                    <div class="stat-label"><span data-en="Cancelled" data-mr="रद्द">Cancelled</span></div>
+                </div>
+            </div>
+
+            <!-- Booking Filters -->
+            <div class="booking-filters">
+                <div class="filter-group">
+                    <label><span data-en="Status:" data-mr="स्थिती:">Status:</span></label>
+                    <select id="bookingStatusFilter" onchange="filterBookings()">
+                        <option value="all"><span data-en="All Statuses" data-mr="सर्व स्थिती">All Statuses</span></option>
+                        <option value="pending"><span data-en="Pending" data-mr="प्रतिक्षित">Pending</span></option>
+                        <option value="confirmed"><span data-en="Confirmed" data-mr="पुष्टीकृत">Confirmed</span></option>
+                        <option value="completed"><span data-en="Completed" data-mr="पूर्ण">Completed</span></option>
+                        <option value="cancelled"><span data-en="Cancelled" data-mr="रद्द">Cancelled</span></option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><span data-en="Session Type:" data-mr="सत्राचा प्रकार:">Session Type:</span></label>
+                    <select id="sessionTypeFilter" onchange="filterBookings()">
+                        <option value="all"><span data-en="All Types" data-mr="सर्व प्रकार">All Types</span></option>
+                        <option value="individual"><span data-en="Individual" data-mr="वैयक्तिक">Individual</span></option>
+                        <option value="group"><span data-en="Group" data-mr="समूह">Group</span></option>
+                        <option value="crisis"><span data-en="Crisis" data-mr="संकट">Crisis</span></option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label><span data-en="Date Range:" data-mr="दिनांक श्रेणी:">Date Range:</span></label>
+                    <input type="date" id="bookingDateFrom" onchange="filterBookings()">
+                    <span>to</span>
+                    <input type="date" id="bookingDateTo" onchange="filterBookings()">
+                </div>
+            </div>
+
+            <!-- Bookings Table -->
+            <div class="bookings-table-container">
+                <table class="bookings-table">
+                    <thead>
+                        <tr>
+                            <th><span data-en="ID" data-mr="आयडी">ID</span></th>
+                            <th><span data-en="Student ID" data-mr="विद्यार्थी आयडी">Student ID</span></th>
+                            <th><span data-en="Date & Time" data-mr="दिनांक आणि वेळ">Date & Time</span></th>
+                            <th><span data-en="Session Type" data-mr="सत्राचा प्रकार">Session Type</span></th>
+                            <th><span data-en="Contact" data-mr="संपर्क">Contact</span></th>
+                            <th><span data-en="Status" data-mr="स्थिती">Status</span></th>
+                            <th><span data-en="Actions" data-mr="किर्या">Actions</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookingsTableBody">
+                        <!-- Booking rows will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Booking Details Modal -->
+            <div id="bookingDetailsModal" class="modal" style="display: none;">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h3><span data-en="Booking Details" data-mr="बुकिंग तपशील">Booking Details</span></h3>
+                        <button class="close-modal" onclick="closeBookingDetailsModal()">×</button>
+                    </div>
+                    <div class="booking-details-content" id="bookingDetailsContent">
+                        <!-- Details will be populated here -->
+                    </div>
+                    <div class="booking-actions">
+                        <button class="confirm-booking-btn" onclick="updateBookingStatus('confirmed')">
+                            ✓ <span data-en="Confirm" data-mr="पुष्टी करा">Confirm</span>
+                        </button>
+                        <button class="complete-booking-btn" onclick="updateBookingStatus('completed')">
+                            🎆 <span data-en="Mark Complete" data-mr="पूर्ण म्हणून चिन्हांकित करा">Mark Complete</span>
+                        </button>
+                        <button class="cancel-booking-btn" onclick="updateBookingStatus('cancelled')">
+                            ✖ <span data-en="Cancel" data-mr="रद्द करा">Cancel</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings" class="admin-content-area">
+            <div class="settings-header">
+                <h3><span data-en="Dashboard Settings" data-mr="डॅशबोर्ड सेटिंग्ज">Dashboard Settings</span></h3>
+            </div>
+
+            <div class="settings-grid">
+                <div class="settings-card">
+                    <h4><span data-en="Notification Settings" data-mr="सूचना सेटिंग्ज">Notification Settings</span></h4>
+                    <div class="settings-options">
+                        <label>
+                            <input type="checkbox" id="crisisNotifications" checked>
+                            <span data-en="Crisis Alert Notifications" data-mr="संकट इशारा सूचना">Crisis Alert Notifications</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="dailyReports" checked>
+                            <span data-en="Daily Summary Reports" data-mr="दैनिक सारांश अहवाल">Daily Summary Reports</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" id="systemAlerts">
+                            <span data-en="System Status Alerts" data-mr="सिस्टम स्थिती इशारे">System Status Alerts</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h4><span data-en="Display Preferences" data-mr="प्रदर्शन प्राधान्ये">Display Preferences</span></h4>
+                    <div class="settings-options">
+                        <label>
+                            <span data-en="Refresh Interval:" data-mr="रिफ्रेश मध्यांतर:">Refresh Interval:</span>
+                            <select id="refreshInterval">
+                                <option value="30">30 seconds</option>
+                                <option value="60" selected>1 minute</option>
+                                <option value="300">5 minutes</option>
+                            </select>
+                        </label>
+                        <label>
+                            <span data-en="Chart Animation:" data-mr="चार्ट अॅनिमेशन:">Chart Animation:</span>
+                            <input type="checkbox" id="chartAnimation" checked>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h4><span data-en="Data Retention" data-mr="डेटा धारणा">Data Retention</span></h4>
+                    <div class="settings-options">
+                        <label>
+                            <span data-en="Analytics Data:" data-mr="विश्लेषण डेटा:">Analytics Data:</span>
+                            <select id="analyticsRetention">
+                                <option value="30">30 days</option>
+                                <option value="90" selected>90 days</option>
+                                <option value="365">1 year</option>
+                            </select>
+                        </label>
+                        <button class="cleanup-btn" onclick="cleanupOldData()">
+                            🗑️ <span data-en="Cleanup Old Data" data-mr="जुना डेटा साफ करा">Cleanup Old Data</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-actions">
+                <button class="save-settings-btn" onclick="saveSettings()">
+                    💾 <span data-en="Save Settings" data-mr="सेटिंग्ज जतन करा">Save Settings</span>
+                </button>
+                <button class="reset-settings-btn" onclick="resetSettings()">
+                    🔄 <span data-en="Reset to Default" data-mr="डीफॉल्टवर रीसेट करा">Reset to Default</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><span data-en="Add New User" data-mr="नवीन वापरकर्ता जोडा">Add New User</span></h3>
+                <button class="close-modal" onclick="closeAddUserModal()">×</button>
+            </div>
+            <form id="addUserForm" onsubmit="handleAddUser(event)">
+                <div class="form-group">
+                    <label for="newUsername"><span data-en="Username" data-mr="वापरकर्ता नाव">Username</span></label>
+                    <input type="text" id="newUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="newFullName"><span data-en="Full Name" data-mr="पूर्ण नाव">Full Name</span></label>
+                    <input type="text" id="newFullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="newEmail"><span data-en="Email" data-mr="ईमेल">Email</span></label>
+                    <input type="email" id="newEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="newRole"><span data-en="Role" data-mr="भूमिका">Role</span></label>
+                    <select id="newRole" required>
+                        <option value="counselor" data-en="Counselor" data-mr="समुपदेशक">Counselor</option>
+                        <option value="admin" data-en="Administrator" data-mr="प्रशासक">Administrator</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword"><span data-en="Password" data-mr="पासवर्ड">Password</span></label>
+                    <input type="password" id="newPassword" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="cancel-btn" onclick="closeAddUserModal()">
+                        <span data-en="Cancel" data-mr="रद्द करा">Cancel</span>
+                    </button>
+                    <button type="submit" class="submit-btn">
+                        <span data-en="Add User" data-mr="वापरकर्ता जोडा">Add User</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+        <p><span data-en="Loading..." data-mr="लोड होत आहे...">Loading...</span></p>
+    </div>
+
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>

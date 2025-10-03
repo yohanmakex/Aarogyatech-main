@@ -1,0 +1,2436 @@
+<!--
+  AarogyaTech - AI-powered Mental Health Assistant
+  Student Interface - Main Application HTML
+  
+  Copyright (c) 2025 Rajiv Magadum
+  All rights reserved.
+  
+  This software is proprietary and confidential.
+  Unauthorized copying or distribution is strictly prohibited.
+  
+  Author: Rajiv Magadum
+  Email: rajiv.magadum@gmail.com
+  Date: 2025
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>"
+        type="image/svg+xml">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="AarogyaTech">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#8b5cf6">
+    <title>AarogyaTech - AI Voice Assistant for Student Mental Health</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn active" onclick="switchLanguage('en')" id="langEn">EN</button>
+        <button class="language-btn" onclick="switchLanguage('mr')" id="langMr">मराठी</button>
+    </div>
+
+    <!-- Main Login Selection -->
+    <div id="loginSelection" class="login-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🧠 <span data-en="AarogyaTech" data-mr="मानसिक काळजी">AarogyaTech</span></h1>
+                <p><span data-en="Student Mental Health Support Platform" data-mr="विद्यार्थी मानसिक आरोग्य सहाय्य प्लॅटफॉर्म">Student Mental Health Support Platform</span></p>
+            </div>
+            
+            <div class="login-options">
+                <div class="login-option-card" onclick="showStudentLogin()">
+                    <div class="option-icon">👨‍🎓</div>
+                    <h3><span data-en="Student Login" data-mr="विद्यार्थी लॉगिन">Student Login</span></h3>
+                    <p><span data-en="Access AI mental health support and resources" data-mr="AI मानसिक आरोग्य सहाय्य आणि संसाधने मिळवा">Access AI mental health support and resources</span></p>
+                </div>
+                
+                <div class="login-option-card" onclick="showAdminLogin()">
+                    <div class="option-icon">👨‍💼</div>
+                    <h3><span data-en="Admin / Counsellor" data-mr="प्रशासक / समुपदेशक">Admin / Counsellor</span></h3>
+                    <p><span data-en="Access dashboard and management tools" data-mr="डॅशबोर्ड आणि व्यवस्थापन साधने मिळवा">Access dashboard and management tools</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Login Overlay -->
+    <div id="studentLoginOverlay" class="login-overlay" style="display: none;">
+        <div class="login-container">
+            <div class="login-header">
+                <button class="back-btn" onclick="showLoginSelection()">← <span data-en="Back" data-mr="परत">Back</span></button>
+                <h1>🧠 <span data-en="AarogyaTech Student" data-mr="मानसिक काळजी विद्यार्थी">AarogyaTech Student</span></h1>
+                <p><span data-en="Student Mental Health Support" data-mr="विद्यार्थी मानसिक आरोग्य सेवा">Student Mental Health Support</span></p>
+            </div>
+            <form class="login-form" onsubmit="handleStudentLogin(event)">
+                <div class="form-group">
+                    <label for="studentEmail"><span data-en="Email" data-mr="ईमेल">Email</span></label>
+                    <input type="email" id="studentEmail" data-placeholder-en="Enter your email"
+                        data-placeholder-mr="तुमचा ईमेल टाका" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="studentPassword"><span data-en="Password" data-mr="पासवर्ड">Password</span></label>
+                    <input type="password" id="studentPassword" data-placeholder-en="Enter your password"
+                        data-placeholder-mr="तुमचा पासवर्ड टाका" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn"><span data-en="Enter MindCare"
+                        data-mr="मानसिक काळजीमध्ये प्रवेश करा">Enter AarogyaTech</span></button>
+            </form>
+            <div class="register-link">
+                <p><span data-en="Demo login: Use any email and password to access"
+                        data-mr="डेमो लॉगिन: प्रवेशासाठी कोणताही ईमेल आणि पासवर्ड वापरा">Demo login: Use any email and password to access</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Login Overlay -->
+    <div id="adminLoginOverlay" class="login-overlay" style="display: none;">
+        <div class="login-container">
+            <div class="login-header">
+                <button class="back-btn" onclick="showLoginSelection()">← <span data-en="Back" data-mr="परत">Back</span></button>
+                <h1>🧠 <span data-en="AarogyaTech Admin" data-mr="मानसिक काळजी प्रशासक">AarogyaTech Admin</span></h1>
+                <p><span data-en="Administrative Dashboard" data-mr="प्रशासकीय डॅशबोर्ड">Administrative Dashboard</span></p>
+            </div>
+            <form class="login-form" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label for="adminUsername"><span data-en="Username" data-mr="वापरकर्ता नाव">Username</span></label>
+                    <input type="text" id="adminUsername" data-placeholder-en="Enter username" 
+                        data-placeholder-mr="वापरकर्ता नाव टाका" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword"><span data-en="Password" data-mr="पासवर्ड">Password</span></label>
+                    <input type="password" id="adminPassword" data-placeholder-en="Enter password" 
+                        data-placeholder-mr="पासवर्ड टाका" placeholder="Enter password" required>
+                </div>
+                <div class="form-group">
+                    <label for="userRole"><span data-en="Role" data-mr="भूमिका">Role</span></label>
+                    <select id="userRole" required>
+                        <option value="admin" data-en="Administrator" data-mr="प्रशासक">Administrator</option>
+                        <option value="counselor" data-en="Counselor" data-mr="समुपदेशक">Counselor</option>
+                    </select>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span data-en="Access Dashboard" data-mr="डॅशबोर्डमध्ये प्रवेश करा">Access Dashboard</span>
+                </button>
+            </form>
+            <div class="register-link">
+                <p><span data-en="Demo: admin/admin123 or counselor/counselor123" 
+                    data-mr="डेमो: admin/admin123 किंवा counselor/counselor123">Demo: admin/admin123 or counselor/counselor123</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="container" style="display: none;">
+        <!-- User Info Bar -->
+        <div class="user-info-bar">
+            <div class="user-details">
+                <span><span data-en="Welcome," data-mr="स्वागत,">Welcome,</span> <strong
+                        id="currentUserName">Student</strong></span>
+                <span style="color: #9ca3af;" id="currentUserEmail">student@university.edu</span>
+            </div>
+            <button class="logout-btn" onclick="logout()"><span data-en="Logout"
+                    data-mr="बाहेर पडा">Logout</span></button>
+        </div>
+
+        <div class="header">
+            <h1>🧠 <span data-en="AarogyaTech" data-mr="मानसिक काळजी">AarogyaTech</span></h1>
+            <p><span data-en="Your Digital Mental Health Companion" data-mr="तुमचा डिजिटल मानसिक आरोग्य साथीदार">Your
+                    Digital Mental Health Companion</span></p>
+        </div>
+
+        <div class="emergency-banner">
+            🚨 <span data-en="Emergency? Call National Suicide Prevention Lifeline:"
+                data-mr="आपत्कालीन? राष्ट्रीय आत्महत्या प्रतिबंध हेल्पलाइनवर कॉल करा:">Emergency? Call National Suicide
+                Prevention Lifeline:</span> <a href="tel:988">988</a> | <span data-en="Campus Crisis Line:"
+                data-mr="कॅम्पस संकट हेल्पलाइन:">Campus Crisis Line:</span> <a href="tel:+1234567890">+1-234-567-890</a>
+        </div>
+
+        <div class="main-nav">
+            <button class="nav-btn active" onclick="showSection('chat')"><span data-en="AI Voice Support"
+                    data-mr="AI आवाज सहाय्य">AI Voice Support</span></button>
+            <button class="nav-btn" onclick="showSection('screening')"><span data-en="Mental Health Screening"
+                    data-mr="मानसिक आरोग्य तपासणी">Mental Health Screening</span></button>
+            <button class="nav-btn" onclick="showSection('booking')"><span data-en="Book Counseling"
+                    data-mr="समुपदेशन बुक करा">Book Counseling</span></button>
+            <button class="nav-btn" onclick="showSection('resources')"><span data-en="Resources"
+                    data-mr="संसाधने">Resources</span></button>
+            <button class="nav-btn" onclick="showSection('peer-support')"><span data-en="Peer Support"
+                    data-mr="समवयस्क सहाय्य">Peer Support</span></button>
+        </div>
+
+        <!-- AI Chat Section -->
+        <div id="chat" class="content-area active">
+            <div class="chat-header">
+                <h2><span data-en="AI Voice Assistant - Mental Health Support"
+                        data-mr="AI आवाज सहायक - मानसिक आरोग्य सहाय्य">AI Voice Assistant - Mental Health Support</span>
+                </h2>
+                <div class="chat-controls">
+                    <div class="ai-language-selector">
+                        <label for="aiLanguageSelect"><span data-en="AI Language:" data-mr="AI भाषा:">AI
+                                Language:</span></label>
+                        <select id="aiLanguageSelect" onchange="setAILanguage(this.value)">
+                            <option value="en" data-en="English" data-mr="इंग्रजी">English</option>
+                            <option value="mr" data-en="Marathi" data-mr="मराठी">Marathi</option>
+                        </select>
+                    </div>
+                    <button class="control-btn" onclick="ChatInterface.clearHistory()" title="Clear Chat">
+                        🗑️ <span data-en="Clear" data-mr="साफ करा">Clear</span>
+                    </button>
+                    <button class="control-btn" onclick="ChatInterface.exportHistory()" title="Export Chat">
+                        💾 <span data-en="Export" data-mr="निर्यात">Export</span>
+                    </button>
+                </div>
+            </div>
+            <p style="margin-bottom: 20px; color: #9ca3af;"><span
+                    data-en="Share what's on your mind using text or voice. I'm here to listen and provide helpful coping strategies with natural, human-like responses. Remember, I'm not a replacement for professional help."
+                    data-mr="आपल्या मनातील गोष्टी मजकूर किंवा आवाजाद्वारे सांगा. मी येथे ऐकण्यासaठी आणि नैसर्गिक, मानवी प्रतिसादांसह उपयुक्त सामना करण्याच्या धोरणे देण्यासाठी आहे. लक्षात ठेवा, मी व्यावसायिक मदतीचा पर्याय नाही.">Share
+                    what's on your mind using text or voice. I'm here to listen and provide helpful coping strategies
+                    with natural, human-like responses. Remember, I'm not a replacement for professional help.</span>
+            </p>
+
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">
+                        <div class="message-content">
+                            <span
+                                data-en="Hello! I'm here to support you. How are you feeling today? You can share anything that's bothering you, and I'll do my best to help."
+                                data-mr="नमस्कार! मी तुम्हाला सहाय्य करण्यासाठी येथे आहे. आज तुम्हाला कसे वाटत आहे? तुम्हाला त्रास देणारी कोणतीही गोष्ट सांगू शकता आणि मी मदत करण्याचा सर्वोत्तम प्रयत्न करेन.">Hello!
+                                I'm here to support you. How are you feeling today? You can share anything that's
+                                bothering you, and I'll do my best to help.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <!-- Voice Mode Selector -->
+                    <div class="voice-mode-selector">
+                        <button class="mode-btn active" data-mode="text" onclick="setVoiceMode('text')">
+                            <span data-en="Text Only" data-mr="केवळ मजकूर">Text Only</span>
+                        </button>
+                        <button class="mode-btn" data-mode="voice-to-text" onclick="setVoiceMode('voice-to-text')">
+                            <span data-en="Voice to Text" data-mr="आवाज ते मजकूर">Voice to Text</span>
+                        </button>
+                        <button class="mode-btn" data-mode="voice-to-voice" onclick="setVoiceMode('voice-to-voice')">
+                            <span data-en="Voice to Voice" data-mr="आवाज ते आवाज">Voice to Voice</span>
+                        </button>
+                    </div>
+
+                    <!-- Enhanced Chat Input -->
+                    <div class="enhanced-chat-input">
+                        <input type="text" id="chatInput" data-placeholder-en="Type your message here..."
+                            data-placeholder-mr="तुमचा संदेश येथे टाइप करा..." placeholder="Type your message here..."
+                            onkeypress="handleEnter(event)">
+
+                        <!-- Voice Controls -->
+                        <div class="voice-controls">
+                            <button class="voice-btn" id="voiceBtn" title="Start Voice Recording"
+                                style="display: none;">
+                                🎤
+                            </button>
+                            <button class="stop-voice-btn" id="stopVoiceBtn" onclick="stopVoiceRecording()">
+                                <span data-en="Stop" data-mr="थांबा">Stop</span>
+                            </button>
+                            <button class="voice-to-text-btn" id="voiceToTextBtn" onclick="startVoiceToText()"
+                                style="display: none;">
+                                <span data-en="🎤→📝" data-mr="🎤→📝">🎤→📝</span>
+                            </button>
+                        </div>
+
+                        <button class="send-btn" onclick="sendMessage()">
+                            <span data-en="Send" data-mr="पाठवा">Send</span>
+                        </button>
+                    </div>
+
+                    <!-- Voice Indicators -->
+                    <div style="display: flex; align-items: center; margin-top: 10px; gap: 15px; flex-wrap: wrap;">
+                        <div class="voice-indicator" id="voiceIndicator">
+                            <div class="recording-dot"></div>
+                            <span data-en="Listening..." data-mr="ऐकत आहे...">Listening...</span>
+                        </div>
+                        <div class="playback-indicator" id="playbackIndicator">
+                            <div class="sound-wave"></div>
+                            <span data-en="Playing response..." data-mr="उत्तर वाजवत आहे...">Playing response...</span>
+                        </div>
+                        <div class="voice-ready-indicator" id="voiceReadyIndicator">
+                            <div class="ready-pulse"></div>
+                            <span data-en="Ready for your voice..." data-mr="तुमच्या आवाजासाठी तयार...">Ready for your
+                                voice...</span>
+                        </div>
+                        <div class="processing-indicator" id="processingIndicator">
+                            Processing...
+                        </div>
+                        <div class="audio-queue-indicator" id="audioQueueIndicator">
+                            0 in queue
+                        </div>
+                    </div>
+
+                    <!-- Audio Progress Bar -->
+                    <div class="audio-progress-container" id="audioProgressContainer" style="display: none;">
+                        <div class="audio-progress-bar">
+                            <div class="audio-progress-fill" id="audioProgressBar"></div>
+                        </div>
+                        <div class="audio-time-display" id="audioTimeDisplay">0:00 / 0:00</div>
+                    </div>
+
+                    <!-- Audio Playback Controls -->
+                    <div class="audio-controls" id="audioControls" style="display: none;">
+                        <button class="audio-control-btn" id="audioPauseBtn" onclick="AudioPlaybackManager.pause()"
+                            title="Pause">
+                            ⏸️ <span data-en="Pause" data-mr="थांबवा">Pause</span>
+                        </button>
+                        <button class="audio-control-btn" id="audioResumeBtn" onclick="AudioPlaybackManager.resume()"
+                            title="Resume">
+                            ▶️ <span data-en="Resume" data-mr="पुन्हा सुरू करा">Resume</span>
+                        </button>
+                        <button class="audio-control-btn" id="audioStopBtn" onclick="AudioPlaybackManager.stop()"
+                            title="Stop">
+                            ⏹️ <span data-en="Stop" data-mr="थांबा">Stop</span>
+                        </button>
+                        <button class="audio-control-btn" id="audioSkipBtn" onclick="AudioPlaybackManager.skipToNext()"
+                            title="Skip">
+                            ⏭️ <span data-en="Skip" data-mr="वगळा">Skip</span>
+                        </button>
+
+                        <!-- Volume Control -->
+                        <div class="volume-control">
+                            <label for="volumeSlider">🔊</label>
+                            <input type="range" id="volumeSlider" min="0" max="100" value="100"
+                                onchange="AudioPlaybackManager.setVolume(this.value / 100)">
+                        </div>
+
+                        <!-- Speed Control -->
+                        <div class="speed-control">
+                            <label for="speedSlider">⚡</label>
+                            <input type="range" id="speedSlider" min="50" max="200" value="100"
+                                onchange="AudioPlaybackManager.setPlaybackRate(this.value / 100)">
+                            <span id="speedDisplay">1.0x</span>
+                        </div>
+                    </div>
+
+                    <!-- Voice Error Display -->
+                    <div class="voice-error" id="voiceError"></div>
+                </div>
+                
+                <!-- Advanced Voice Interaction Area -->
+                <div id="voiceInteractionArea" class="voice-interaction-area" style="display: none; margin-top: 20px;">
+                    <h3 style="margin-bottom: 15px; color: #c084fc;">🎤 Advanced Voice Interaction</h3>
+                    <div id="voiceInteractionContainer" class="voice-interaction-container-placeholder">
+                        <!-- VoiceInteractionManager UI will be inserted here -->
+                    </div>
+                    <button id="toggleVoiceArea" class="control-btn" onclick="toggleAdvancedVoiceArea()" style="margin-top: 10px;">
+                        🎙️ <span data-en="Switch to Advanced Voice Mode" data-mr="प्रगत आवाज मोडमध्ये स्विच करा">Switch to Advanced Voice Mode</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mental Health Screening Section -->
+        <div id="screening" class="content-area">
+            <!-- Screening Home -->
+            <div id="screeningHome">
+                <h2><span data-en="Mental Health Screening Tools" data-mr="मानसिक आरोग्य तपासणी साधने">Mental Health Screening Tools</span></h2>
+                <p style="margin-bottom: 30px; color: #9ca3af;"><span data-en="Professional-grade psychological screening tools to assess your mental health. These are widely used clinical instruments that help identify depression, anxiety, and general psychological distress." data-mr="आपल्या मानसिक आरोग्याचे मूल्यांकन करण्यासाठी व्यावसायिक-दर्जाची मानसिक तपासणी साधने. ही व्यापकपणे वापरली जाणारी क्लिनिकल उपकरणे आहेत जी नैराश्य, चिंता आणि सामान्य मानसिक त्रास ओळखण्यात मदत करतात.">Professional-grade psychological screening tools to assess your mental health. These are widely used clinical instruments that help identify depression, anxiety, and general psychological distress.</span></p>
+                
+                <div class="screening-disclaimer" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <h4 style="color: #ef4444; margin-bottom: 10px;">⚠️ <span data-en="Important Disclaimer" data-mr="महत्वाची सूचना">Important Disclaimer</span></h4>
+                    <p><span data-en="These screening tools are for educational purposes only and do not constitute professional medical advice, diagnosis, or treatment. Results should be discussed with a qualified healthcare provider. If you are experiencing a mental health crisis, please seek immediate professional help." data-mr="ही तपासणी साधने केवळ शैक्षणिक हेतूंसाठी आहेत आणि व्यावसायिक वैद्यकीय सल्ला, निदान किंवा उपचार नाहीत. परिणामांची चर्चा पात्र आरोग्यसेवा प्रदात्यासोबत केली पाहिजे. जर तुम्हाला मानसिक आरोग्य संकट येत असेल, तर कृपया तात्काळ व्यावसायिक मदत घ्या.">These screening tools are for educational purposes only and do not constitute professional medical advice, diagnosis, or treatment. Results should be discussed with a qualified healthcare provider. If you are experiencing a mental health crisis, please seek immediate professional help.</span></p>
+                </div>
+                
+                <div class="screening-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div class="screening-card" onclick="showScreeningTool('phq9')" style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(139, 92, 246, 0.3); padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+                        <h3>📊 <span data-en="PHQ-9 Depression Screening" data-mr="PHQ-9 नैराश्य तपासणी">PHQ-9 Depression Screening</span></h3>
+                        <p><span data-en="9-question screening tool to assess depression severity over the past 2 weeks" data-mr="गेल्या २ आठवड्यांमध्ये नैराश्याची तीव्रता मोजण्यासाठी ९-प्रश्न तपासणी साधन">9-question screening tool to assess depression severity over the past 2 weeks</span></p>
+                        <div style="margin-top: 15px; color: #a78bfa;">
+                            <span data-en="⏱️ ~3-5 minutes • Clinical Grade" data-mr="⏱️ ~३-५ मिनिटे • क्लिनिकल दर्जाची">⏱️ ~3-5 minutes • Clinical Grade</span>
+                        </div>
+                    </div>
+                    
+                    <div class="screening-card" onclick="showScreeningTool('gad7')" style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(139, 92, 246, 0.3); padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+                        <h3>🧠 <span data-en="GAD-7 Anxiety Screening" data-mr="GAD-7 चिंता तपासणी">GAD-7 Anxiety Screening</span></h3>
+                        <p><span data-en="7-question screening tool to assess generalized anxiety disorder symptoms" data-mr="सामान्यीकृत चिंता विकाराची लक्षणे मोजण्यासाठी ७-प्रश्न तपासणी साधन">7-question screening tool to assess generalized anxiety disorder symptoms</span></p>
+                        <div style="margin-top: 15px; color: #a78bfa;">
+                            <span data-en="⏱️ ~2-4 minutes • Clinical Grade" data-mr="⏱️ ~२-४ मिनिटे • क्लिनिकल दर्जाची">⏱️ ~2-4 minutes • Clinical Grade</span>
+                        </div>
+                    </div>
+                    
+                    <div class="screening-card" onclick="showScreeningTool('ghq12')" style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(139, 92, 246, 0.3); padding: 20px; border-radius: 10px; cursor: pointer; transition: all 0.3s ease;">
+                        <h3>🌡️ <span data-en="GHQ-12 General Health Screening" data-mr="GHQ-12 सामान्य आरोग्य तपासणी">GHQ-12 General Health Screening</span></h3>
+                        <p><span data-en="12-question screening tool to assess general psychological well-being and distress" data-mr="सामान्य मानसिक कल्याण आणि त्रास मोजण्यासाठी १२-प्रश्न तपासणी साधन">12-question screening tool to assess general psychological well-being and distress</span></p>
+                        <div style="margin-top: 15px; color: #a78bfa;">
+                            <span data-en="⏱️ ~4-6 minutes • Clinical Grade" data-mr="⏱️ ~४-६ मिनिटे • क्लिनिकल दर्जाची">⏱️ ~4-6 minutes • Clinical Grade</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="screening-info" style="margin-top: 30px; background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #06b6d4; margin-bottom: 15px;">💡 <span data-en="How These Tools Work" data-mr="ही साधने कशी कार्य करतात">How These Tools Work</span></h4>
+                    <ul style="color: #d1d5db; line-height: 1.6;">
+                        <li><span data-en="Each tool contains clinically validated questions based on diagnostic criteria" data-mr="प्रत्येक साधनात निदान निकषांवर आधारित वैद्यकीयदृष्ट्या वैध प्रश्न आहेत">Each tool contains clinically validated questions based on diagnostic criteria</span></li>
+                        <li><span data-en="Your responses are scored using standardized clinical methods" data-mr="तुमच्या प्रतिसादांना मानकीकृत क्लिनिकल पद्धतींचा वापर करून गुण दिले जातात">Your responses are scored using standardized clinical methods</span></li>
+                        <li><span data-en="Results indicate severity levels and provide professional recommendations" data-mr="परिणाम तीव्रता पातळी दर्शवतात आणि व्यावसायिक शिफारसी देतात">Results indicate severity levels and provide professional recommendations</span></li>
+                        <li><span data-en="All data is kept confidential and used only for your assessment" data-mr="सर्व डेटा गुप्त ठेवला जातो आणि केवळ तुमच्या मूल्यांकनासाठी वापरला जातो">All data is kept confidential and used only for your assessment</span></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- PHQ-9 Depression Screening -->
+            <div id="phq9Screening" class="screening-detail" style="display: none;">
+                <button class="back-btn" onclick="showScreeningHome()">← <span data-en="Back to Screening Tools" data-mr="तपासणी साधनांकडे परत">Back to Screening Tools</span></button>
+                <h2>📊 <span data-en="PHQ-9 Depression Screening" data-mr="PHQ-9 नैराश्य तपासणी">PHQ-9 Depression Screening</span></h2>
+                
+                <div class="screening-instructions" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <h4 style="color: #6366f1; margin-bottom: 10px;">📋 <span data-en="Instructions" data-mr="सूचना">Instructions</span></h4>
+                    <p><span data-en="Over the last 2 weeks, how often have you been bothered by any of the following problems? Please select the most appropriate response for each item." data-mr="गेल्या २ आठवड्यांमध्ये, खालीलपैकी कोणत्याही समस्यांमुळे तुम्हाला किती वेळा त्रास झाला आहे? कृपया प्रत्येक बाबीसाठी सर्वात योग्य प्रतिसाद निवडा.">Over the last 2 weeks, how often have you been bothered by any of the following problems? Please select the most appropriate response for each item.</span></p>
+                </div>
+                
+                <form id="phq9Form" class="screening-form">
+                    <div id="phq9Questions"><!-- Questions will be populated by JavaScript --></div>
+                    <div class="form-actions" style="margin-top: 30px; text-align: center;">
+                        <button type="button" onclick="calculatePHQ9Score()" class="submit-btn" style="margin-right: 15px;">
+                            <span data-en="Calculate Results" data-mr="परिणाम काढा">Calculate Results</span>
+                        </button>
+                        <button type="button" onclick="resetScreening('phq9')" style="background: #6b7280; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
+                            <span data-en="Reset" data-mr="रीसेट">Reset</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="phq9Results" class="screening-results" style="display: none; margin-top: 30px;"></div>
+            </div>
+            
+            <!-- GAD-7 Anxiety Screening -->
+            <div id="gad7Screening" class="screening-detail" style="display: none;">
+                <button class="back-btn" onclick="showScreeningHome()">← <span data-en="Back to Screening Tools" data-mr="तपासणी साधनांकडे परत">Back to Screening Tools</span></button>
+                <h2>🧠 <span data-en="GAD-7 Anxiety Screening" data-mr="GAD-7 चिंता तपासणी">GAD-7 Anxiety Screening</span></h2>
+                
+                <div class="screening-instructions" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <h4 style="color: #6366f1; margin-bottom: 10px;">📋 <span data-en="Instructions" data-mr="सूचना">Instructions</span></h4>
+                    <p><span data-en="Over the last 2 weeks, how often have you been bothered by the following problems? Please select the most appropriate response." data-mr="गेल्या २ आठवड्यांमध्ये, खालील समस्यांमुळे तुम्हाला किती वेळा त्रास झाला आहे? कृपया सर्वात योग्य प्रतिसाद निवडा.">Over the last 2 weeks, how often have you been bothered by the following problems? Please select the most appropriate response.</span></p>
+                </div>
+                
+                <form id="gad7Form" class="screening-form">
+                    <div id="gad7Questions"><!-- Questions will be populated by JavaScript --></div>
+                    <div class="form-actions" style="margin-top: 30px; text-align: center;">
+                        <button type="button" onclick="calculateGAD7Score()" class="submit-btn" style="margin-right: 15px;">
+                            <span data-en="Calculate Results" data-mr="परिणाम काढा">Calculate Results</span>
+                        </button>
+                        <button type="button" onclick="resetScreening('gad7')" style="background: #6b7280; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
+                            <span data-en="Reset" data-mr="रीसेट">Reset</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="gad7Results" class="screening-results" style="display: none; margin-top: 30px;"></div>
+            </div>
+            
+            <!-- GHQ-12 General Health Screening -->
+            <div id="ghq12Screening" class="screening-detail" style="display: none;">
+                <button class="back-btn" onclick="showScreeningHome()">← <span data-en="Back to Screening Tools" data-mr="तपासणी साधनांकडे परत">Back to Screening Tools</span></button>
+                <h2>🌡️ <span data-en="GHQ-12 General Health Screening" data-mr="GHQ-12 सामान्य आरोग्य तपासणी">GHQ-12 General Health Screening</span></h2>
+                
+                <div class="screening-instructions" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                    <h4 style="color: #6366f1; margin-bottom: 10px;">📋 <span data-en="Instructions" data-mr="सूचना">Instructions</span></h4>
+                    <p><span data-en="We would like to know if you have had any medical complaints and how your health has been in general, over the past few weeks. Please answer ALL the questions by selecting the response that you think most nearly applies to you." data-mr="गेल्या काही आठवड्यांमध्ये तुम्हाला काही वैद्यकीय तक्रारी आल्या आहेत का आणि तुमची आरोग्य सर्वसाधारणपणे कशी आहे हे आम्हाला जाणून घ्यायचे आहे. कृपया सर्व प्रश्नांची उत्तरे द्या आणि तुम्हाला सर्वात जवळचा वाटतो असा प्रतिसाद निवडा.">We would like to know if you have had any medical complaints and how your health has been in general, over the past few weeks. Please answer ALL the questions by selecting the response that you think most nearly applies to you.</span></p>
+                </div>
+                
+                <form id="ghq12Form" class="screening-form">
+                    <div id="ghq12Questions"><!-- Questions will be populated by JavaScript --></div>
+                    <div class="form-actions" style="margin-top: 30px; text-align: center;">
+                        <button type="button" onclick="calculateGHQ12Score()" class="submit-btn" style="margin-right: 15px;">
+                            <span data-en="Calculate Results" data-mr="परिणाम काढा">Calculate Results</span>
+                        </button>
+                        <button type="button" onclick="resetScreening('ghq12')" style="background: #6b7280; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
+                            <span data-en="Reset" data-mr="रीसेट">Reset</span>
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="ghq12Results" class="screening-results" style="display: none; margin-top: 30px;"></div>
+            </div>
+        </div>
+
+        <!-- Booking Section -->
+        <div id="booking" class="content-area">
+            <h2><span data-en="Book a Confidential Counseling Session" data-mr="गुप्त समुपदेशन सत्र बुक करा">Book a Confidential Counseling Session</span></h2>
+            <p style="margin-bottom: 30px; color: #9ca3af;"><span data-en="Schedule a session with our trained counselors. All appointments are completely confidential." data-mr="आमच्या प्रशिक्षित समुपदेशकांसोबत सत्र नियोजित करा. सर्व भेटी पूर्णपणे गुप्त आहेत.">Schedule a session with our trained counselors. All appointments are completely confidential.</span></p>
+            
+            <form class="booking-form" onsubmit="handleBooking(event)">
+                <div class="form-group">
+                    <label for="studentId"><span data-en="Student ID (Optional - for record keeping)" data-mr="विद्यार्थी आयडी (वैकल्पिक - रेकॉर्ड ठेवण्यासाठी)">Student ID (Optional - for record keeping)</span></label>
+                    <input type="text" id="studentId" data-placeholder-en="Leave blank for complete anonymity" data-placeholder-mr="पूर्ण अज्ञातवासासाठी रिक्त ठेवा" placeholder="Leave blank for complete anonymity">
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferredDate"><span data-en="Preferred Date" data-mr="पसंतीची तारीख">Preferred Date</span></label>
+                    <input type="date" id="preferredDate" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferredTime"><span data-en="Preferred Time" data-mr="पसंतीची वेळ">Preferred Time</span></label>
+                    <select id="preferredTime" required>
+                        <option value=""><span data-en="Select a time" data-mr="वेळ निवडा">Select a time</span></option>
+                        <option value="09:00"><span data-en="9:00 AM" data-mr="सकाळी ९:००">9:00 AM</span></option>
+                        <option value="10:00"><span data-en="10:00 AM" data-mr="सकाळी १०:००">10:00 AM</span></option>
+                        <option value="11:00"><span data-en="11:00 AM" data-mr="सकाळी ११:००">11:00 AM</span></option>
+                        <option value="14:00"><span data-en="2:00 PM" data-mr="दुपारी २:००">2:00 PM</span></option>
+                        <option value="15:00"><span data-en="3:00 PM" data-mr="दुपारी ३:००">3:00 PM</span></option>
+                        <option value="16:00"><span data-en="4:00 PM" data-mr="दुपारी ४:००">4:00 PM</span></option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="sessionType"><span data-en="Session Type" data-mr="सत्राचा प्रकार">Session Type</span></label>
+                    <select id="sessionType" required>
+                        <option value=""><span data-en="Choose session type" data-mr="सत्राचा प्रकार निवडा">Choose session type</span></option>
+                        <option value="individual"><span data-en="Individual Counseling" data-mr="वैयक्तिक समुपदेशन">Individual Counseling</span></option>
+                        <option value="group"><span data-en="Group Session" data-mr="समूह सत्र">Group Session</span></option>
+                        <option value="crisis"><span data-en="Crisis Intervention" data-mr="संकट हस्तक्षेप">Crisis Intervention</span></option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="concerns"><span data-en="Brief Description of Concerns (Optional)" data-mr="चिंतांचे थोडक्यात वर्णन (वैकल्पिक)">Brief Description of Concerns (Optional)</span></label>
+                    <textarea id="concerns" rows="4" data-placeholder-en="This helps us assign the most suitable counselor..." data-placeholder-mr="हे आम्हाला सर्वात योग्य समुपदेशक नेमण्यात मदत करते..." placeholder="This helps us assign the most suitable counselor..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactMethod"><span data-en="Preferred Contact Method" data-mr="पसंतीची संपर्क पद्धत">Preferred Contact Method</span></label>
+                    <select id="contactMethod" required>
+                        <option value=""><span data-en="How should we contact you?" data-mr="आम्ही तुमच्याशी कसा संपर्क साधू?">How should we contact you?</span></option>
+                        <option value="email"><span data-en="Email" data-mr="ईमेल">Email</span></option>
+                        <option value="phone"><span data-en="Phone" data-mr="फोन">Phone</span></option>
+                        <option value="campus-message"><span data-en="Campus Message System" data-mr="कॅम्पस संदेश प्रणाली">Campus Message System</span></option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contactInfo"><span data-en="Contact Information" data-mr="संपर्क माहिती">Contact Information</span></label>
+                    <input type="text" id="contactInfo" data-placeholder-en="Email or phone number" data-placeholder-mr="ईमेल किंवा फोन नंबर" placeholder="Email or phone number" required>
+                </div>
+                
+                <button type="submit" class="submit-btn"><span data-en="Schedule Appointment" data-mr="भेट नियोजित करा">Schedule Appointment</span></button>
+            </form>
+        </div>
+
+        <!-- Resources Section -->
+        <div id="resources" class="content-area">
+            <div id="resourcesHome">
+                <h2><span data-en="Mental Wellness Resources" data-mr="मानसिक कल्याण संसाधने">Mental Wellness Resources</span></h2>
+                <p style="margin-bottom: 30px; color: #9ca3af;"><span data-en="Access our collection of self-help tools, guides, and educational materials designed specifically for students." data-mr="विद्यार्थ्यांसाठी विशेषतः डिझाइन केलेल्या स्व-सहाय्य साधने, मार्गदर्शक आणि शैक्षणिक सामग्रीचा आमचा संग्रह पहा.">Access our collection of self-help tools, guides, and educational materials designed specifically for students.</span></p>
+                
+                <div class="resource-grid">
+                    <div class="resource-card" onclick="showResourceDetail('breathing')">
+                        <h3>🫁 <span data-en="Breathing Exercises" data-mr="श्वास व्यायाम">Breathing Exercises</span></h3>
+                        <p><span data-en="Guided breathing techniques for anxiety and stress relief" data-mr="चिंता आणि तणाव कमी करण्यासाठी मार्गदर्शित श्वास तंत्र">Guided breathing techniques for anxiety and stress relief</span></p>
+                    </div>
+                    
+                    <div class="resource-card" onclick="showResourceDetail('meditation')">
+                        <h3>🧘 <span data-en="Meditation Guide" data-mr="ध्यान मार्गदर्शक">Meditation Guide</span></h3>
+                        <p><span data-en="Mindfulness and meditation practices for beginners" data-mr="नवशिक्यांसाठी मनःशांती आणि ध्यान अभ्यास">Mindfulness and meditation practices for beginners</span></p>
+                    </div>
+                    
+                    <div class="resource-card" onclick="showResourceDetail('videos')">
+                        <h3>📺 <span data-en="Mental Health Videos" data-mr="मानसिक आरोग्य व्हिडिओ">Mental Health Videos</span></h3>
+                        <p><span data-en="Curated YouTube videos on mental wellness and coping strategies" data-mr="मानसिक कल्याण आणि सामना करण्याच्या रणनीतींवर निवडक YouTube व्हिडिओ">Curated YouTube videos on mental wellness and coping strategies</span></p>
+                    </div>
+                    
+                    <div class="resource-card" onclick="showResourceDetail('academic')">
+                        <h3>📚 <span data-en="Academic Stress" data-mr="शैक्षणिक तणाव">Academic Stress</span></h3>
+                        <p><span data-en="Managing study stress and exam anxiety effectively" data-mr="अभ्यासाचा तणाव आणि परीक्षेची चिंता प्रभावीपणे व्यवस्थापित करणे">Managing study stress and exam anxiety effectively</span></p>
+                    </div>
+                    
+                    <div class="resource-card" onclick="showResourceDetail('sleep')">
+                        <h3>😴 <span data-en="Sleep Hygiene" data-mr="झोपेची स्वच्छता">Sleep Hygiene</span></h3>
+                        <p><span data-en="Tips for better sleep and managing sleep disorders" data-mr="चांगली झोप आणि झोपेच्या विकारांना व्यवस्थापित करण्यासाठी टिप्स">Tips for better sleep and managing sleep disorders</span></p>
+                    </div>
+                    
+                    <div class="resource-card" onclick="showResourceDetail('emergency')">
+                        <h3>🆘 <span data-en="Crisis Resources" data-mr="संकट संसाधने">Crisis Resources</span></h3>
+                        <p><span data-en="Emergency contacts and immediate help resources" data-mr="आपत्कालीन संपर्क आणि तात्काळ मदत संसाधने">Emergency contacts and immediate help resources</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resource Detail Views -->
+            <div id="breathingDetail" class="resource-detail" style="display: none;">
+                <button class="back-btn" onclick="showResourcesHome()">← <span data-en="Back to Resources" data-mr="संसाधनांकडे परत">Back to Resources</span></button>
+                <h2>🫁 <span data-en="Breathing Exercises for Stress Relief" data-mr="तणाव कमी करण्यासाठी श्वास व्यायाम">Breathing Exercises for Stress Relief</span></h2>
+                
+                <div class="exercise-card">
+                    <h4><span data-en="4-7-8 Breathing Technique" data-mr="४-७-८ श्वास तंत्र">4-7-8 Breathing Technique</span></h4>
+                    <ol class="exercise-steps">
+                        <li><span data-en="Sit comfortably with your back straight" data-mr="पाठ सरळ ठेवून आरामात बसा">Sit comfortably with your back straight</span></li>
+                        <li><span data-en="Inhale through your nose for 4 counts" data-mr="नाकातून ४ मोजण्यांसाठी श्वास घ्या">Inhale through your nose for 4 counts</span></li>
+                        <li><span data-en="Hold your breath for 7 counts" data-mr="७ मोजण्यांसाठी श्वास रोखा">Hold your breath for 7 counts</span></li>
+                        <li><span data-en="Exhale through your mouth for 8 counts" data-mr="तोंडातून ८ मोजण्यांसाठी श्वास सोडा">Exhale through your mouth for 8 counts</span></li>
+                        <li><span data-en="Repeat 3-4 times" data-mr="३-४ वेळा करा">Repeat 3-4 times</span></li>
+                    </ol>
+                </div>
+            </div>
+
+            <div id="meditationDetail" class="resource-detail" style="display: none;">
+                <button class="back-btn" onclick="showResourcesHome()">← <span data-en="Back to Resources" data-mr="संसाधनांकडे परत">Back to Resources</span></button>
+                <h2>🧘 <span data-en="Meditation Guide for Students" data-mr="विद्यार्थ्यांसाठी ध्यान मार्गदर्शक">Meditation Guide for Students</span></h2>
+                
+                <div class="meditation-timer">
+                    <h4><span data-en="Guided Meditation Timer" data-mr="मार्गदर्शित ध्यान टाइमर">Guided Meditation Timer</span></h4>
+                    <div class="timer-display" id="timerDisplay">05:00</div>
+                    <button class="timer-btn" onclick="startTimer(5)"><span data-en="5 Min" data-mr="५ मिनिट">5 Min</span></button>
+                    <button class="timer-btn" onclick="startTimer(10)"><span data-en="10 Min" data-mr="१० मिनिट">10 Min</span></button>
+                    <button class="timer-btn" onclick="startTimer(15)"><span data-en="15 Min" data-mr="१५ मिनिट">15 Min</span></button>
+                    <br><br>
+                    <button class="timer-btn" id="timerControl" onclick="toggleTimer()"><span data-en="Start" data-mr="सुरुवात">Start</span></button>
+                    <button class="timer-btn" onclick="resetTimer()"><span data-en="Reset" data-mr="रीसेट">Reset</span></button>
+                </div>
+            </div>
+
+            <div id="videosDetail" class="resource-detail" style="display: none;">
+                <button class="back-btn" onclick="showResourcesHome()">← <span data-en="Back to Resources" data-mr="संसाधनांकडे परत">Back to Resources</span></button>
+                <h2>📺 <span data-en="Mental Health Educational Videos" data-mr="मानसिक आरोग्य शैक्षणिक व्हिडिओ">Mental Health Educational Videos</span></h2>
+                
+                <div class="video-grid">
+                    <div class="video-card">
+                        <h4><span data-en="Understanding Anxiety" data-mr="चिंता समजून घेणे">Understanding Anxiety</span></h4>
+                        <p><span data-en="Learn about anxiety disorders and coping mechanisms" data-mr="चिंता विकार आणि सामना करण्याच्या यंत्रणांबद्दल जाणून घ्या">Learn about anxiety disorders and coping mechanisms</span></p>
+                        <a href="https://www.youtube.com/watch?v=WWloIAQpMcQ" target="_blank" class="video-link">
+                            <span data-en="Watch on YouTube" data-mr="YouTube वर पहा">Watch on YouTube</span> 🎥
+                        </a>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4><span data-en="Mindfulness for Students" data-mr="विद्यार्थ्यांसाठी मनःशांती">Mindfulness for Students</span></h4>
+                        <p><span data-en="Practical mindfulness techniques for academic life" data-mr="शैक्षणिक जीवनासाठी व्यावहारिक मनःशांती तंत्र">Practical mindfulness techniques for academic life</span></p>
+                        <a href="https://www.youtube.com/watch?v=ZToicYcHIOU" target="_blank" class="video-link">
+                            <span data-en="Watch on YouTube" data-mr="YouTube वर पहा">Watch on YouTube</span> 🎥
+                        </a>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4><span data-en="Dealing with Depression" data-mr="नैराश्याला सामोरे जाणे">Dealing with Depression</span></h4>
+                        <p><span data-en="Understanding depression and seeking help" data-mr="नैराश्य समजून घेणे आणि मदत मागणे">Understanding depression and seeking help</span></p>
+                        <a href="https://www.youtube.com/watch?v=z-IR48Mb3W0" target="_blank" class="video-link">
+                            <span data-en="Watch on YouTube" data-mr="YouTube वर पहा">Watch on YouTube</span> 🎥
+                        </a>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4><span data-en="Stress Management Techniques" data-mr="तणाव व्यवस्थापन तंत्र">Stress Management Techniques</span></h4>
+                        <p><span data-en="Evidence-based strategies for managing stress" data-mr="तणाव व्यवस्थापनासाठी पुरावा-आधारित रणनीती">Evidence-based strategies for managing stress</span></p>
+                        <a href="https://www.youtube.com/watch?v=hnpQrMqDoqE" target="_blank" class="video-link">
+                            <span data-en="Watch on YouTube" data-mr="YouTube वर पहा">Watch on YouTube</span> 🎥
+                        </a>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4><span data-en="Building Resilience" data-mr="लवचिकता निर्माण करणे">Building Resilience</span></h4>
+                        <p><span data-en="How to bounce back from setbacks and challenges" data-mr="अडचणी आणि आव्हानांमधून कसे परत येणे">How to bounce back from setbacks and challenges</span></p>
+                        <a href="https://www.youtube.com/watch?v=NWH8N-BvhAw" target="_blank" class="video-link">
+                            <span data-en="Watch on YouTube" data-mr="YouTube वर पहा">Watch on YouTube</span> 🎥
+                        </a>
+                    </div>
+                    
+                    <div class="video-card">
+                        <h4><span data-en="Sleep and Mental Health" data-mr="झोप आणि मानसिक आरोग्य">Sleep and Mental Health</span></h4>
+                        <p><span data-en="The connection between sleep quality and mental wellness" data-mr="झोपेची गुणवत्ता आणि मानसिक कल्याण यांच्यातील संबंध">The connection between sleep quality and mental wellness</span></p>
+                        <a href="https://www.youtube.com/watch?v=5MuIMqhT8DM" target="_blank" class="video-link">
+                            <span data-en="Watch on YouTube" data-mr="YouTube वर पहा">Watch on YouTube</span> 🎥
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="academicDetail" class="resource-detail" style="display: none;">
+                <button class="back-btn" onclick="showResourcesHome()">← <span data-en="Back to Resources" data-mr="संसाधनांकडे परत">Back to Resources</span></button>
+                <h2>📚 <span data-en="Managing Academic Stress" data-mr="शैक्षणिक तणाव व्यवस्थापित करणे">Managing Academic Stress</span></h2>
+                
+                <div class="tip-box">
+                    <h4>💡 <span data-en="Academic Stress Busters" data-mr="शैक्षणिक तणाव कमी करणारे">Academic Stress Busters</span></h4>
+                    <ul>
+                        <li><span data-en="Break large tasks into smaller, manageable chunks" data-mr="मोठी कामे छोट्या, व्यवस्थापनीय भागांमध्ये विभागून करा">Break large tasks into smaller, manageable chunks</span></li>
+                        <li><span data-en="Use the Pomodoro Technique (25 min work, 5 min break)" data-mr="पोमोडोरो तंत्र वापरा (२५ मिनिट काम, ५ मिनिट विश्रांती)">Use the Pomodoro Technique (25 min work, 5 min break)</span></li>
+                        <li><span data-en="Exercise regularly to reduce stress hormones" data-mr="तणावाचे हार्मोन्स कमी करण्यासाठी नियमित व्यायाम करा">Exercise regularly to reduce stress hormones</span></li>
+                        <li><span data-en="Remember: grades don't define your worth" data-mr="लक्षात ठेवा: गुण तुमची किंमत ठरवत नाहीत">Remember: grades don't define your worth</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="sleepDetail" class="resource-detail" style="display: none;">
+                <button class="back-btn" onclick="showResourcesHome()">← <span data-en="Back to Resources" data-mr="संसाधनांकडे परत">Back to Resources</span></button>
+                <h2>😴 <span data-en="Sleep Hygiene for Better Mental Health" data-mr="चांगल्या मानसिक आरोग्यासाठी झोपेची स्वच्छता">Sleep Hygiene for Better Mental Health</span></h2>
+                
+                <div class="tip-box">
+                    <h4>💡 <span data-en="Sleep Tips for Students" data-mr="विद्यार्थ्यांसाठी झोपेच्या टिप्स">Sleep Tips for Students</span></h4>
+                    <ul>
+                        <li><span data-en="Maintain a consistent sleep schedule" data-mr="सुसंगत झोपेचे वेळापत्रक ठेवा">Maintain a consistent sleep schedule</span></li>
+                        <li><span data-en="Avoid screens 1 hour before bedtime" data-mr="झोपण्याच्या १ तास आधी स्क्रीन टाळा">Avoid screens 1 hour before bedtime</span></li>
+                        <li><span data-en="Create a relaxing bedtime routine" data-mr="आरामदायक झोपण्याची दिनचर्या तयार करा">Create a relaxing bedtime routine</span></li>
+                        <li><span data-en="Keep your bedroom cool, dark, and quiet" data-mr="तुमची शयनकक्ष थंड, अंधारी आणि शांत ठेवा">Keep your bedroom cool, dark, and quiet</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="emergencyDetail" class="resource-detail" style="display: none;">
+                <button class="back-btn" onclick="showResourcesHome()">← <span data-en="Back to Resources" data-mr="संसाधनांकडे परत">Back to Resources</span></button>
+                <h2>🆘 <span data-en="Crisis Resources & Emergency Support" data-mr="संकट संसाधने आणि आपत्कालीन सहाय्य">Crisis Resources & Emergency Support</span></h2>
+                
+                <div class="emergency-card">
+                    <h4>🚨 <span data-en="Immediate Crisis Support" data-mr="तात्काळ संकट सहाय्य">Immediate Crisis Support</span></h4>
+                    <ul>
+                        <li><strong><span data-en="National Suicide Prevention Lifeline:" data-mr="राष्ट्रीय आत्महत्या प्रतिबंध हेल्पलाइन:">National Suicide Prevention Lifeline:</span></strong> <a href="tel:988">988</a></li>
+                        <li><strong><span data-en="Crisis Text Line:" data-mr="संकट मजकूर लाइन:">Crisis Text Line:</span></strong> <span data-en="Text HOME to 741741" data-mr="741741 वर HOME मजकूर पाठवा">Text HOME to 741741</span></li>
+                        <li><strong><span data-en="Campus Crisis Line:" data-mr="कॅम्पस संकट हेल्पलाइन:">Campus Crisis Line:</span></strong> <a href="tel:+1234567890">+1-234-567-890</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Peer Support Section -->
+        <div id="peer-support" class="content-area">
+            <h2><span data-en="Peer Support Community" data-mr="समवयस्क सहाय्य समुदाय">Peer Support Community</span></h2>
+            <p style="margin-bottom: 30px; color: #9ca3af;"><span data-en="Connect with fellow students in a safe, moderated environment. Share experiences and support each other." data-mr="सुरक्षित, नियंत्रित वातावरणात सहकारी विद्यार्थ्यांशी जुळवा. अनुभव सामायिक करा आणि एकमेकांना सहाय्य करा.">Connect with fellow students in a safe, moderated environment. Share experiences and support each other.</span></p>
+            
+            <div style="margin-bottom: 30px;">
+                <button class="submit-btn" onclick="showNewPostForm()"><span data-en="Share Your Story" data-mr="तुमची कहाणी सामायिक करा">Share Your Story</span></button>
+            </div>
+            
+            <div id="newPostForm" style="display: none; background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(139, 92, 246, 0.3); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                <h4 style="color: #c084fc; margin-bottom: 15px;"><span data-en="Share Anonymously" data-mr="अज्ञातपणे सामायिक करा">Share Anonymously</span></h4>
+                <textarea id="newPostContent" rows="4" style="width: 100%; margin: 10px 0; padding: 12px; border-radius: 8px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(139, 92, 246, 0.3); color: #f3f4f6;" data-placeholder-en="Share your experience, ask for advice, or offer support to others..." data-placeholder-mr="तुमचा अनुभव सामायिक करा, सल्ला विचारा किंवा इतरांना सहाय्य ऑफर करा..." placeholder="Share your experience, ask for advice, or offer support to others..."></textarea>
+                <button onclick="submitPost()" class="submit-btn" style="margin-right: 10px;"><span data-en="Post" data-mr="पोस्ट करा">Post</span></button>
+                <button onclick="cancelPost()" style="background: #6b7280; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;"><span data-en="Cancel" data-mr="रद्द करा">Cancel</span></button>
+            </div>
+            
+            <div class="forum-posts" id="forumPosts">
+                <div class="forum-post">
+                    <h4><span data-en="Dealing with Exam Anxiety" data-mr="परीक्षा चिंतेला सामोरे जाणे">Dealing with Exam Anxiety</span></h4>
+                    <div class="post-meta"><span data-en="Anonymous Student • 2 hours ago" data-mr="अज्ञात विद्यार्थी • २ तासांपूर्वी">Anonymous Student • 2 hours ago</span></div>
+                    <p><span data-en="I've been struggling with severe anxiety before exams. My heart races and I can't focus. Has anyone found techniques that actually work?" data-mr="परीक्षेपूर्वी मला तीव्र चिंता होत आहे. माझे हृदय वेगाने धडधडते आणि मी लक्ष केंद्रित करू शकत नाही. कोणाला असे तंत्र सापडले आहेत जे खरोखर काम करतात?">I've been struggling with severe anxiety before exams. My heart races and I can't focus. Has anyone found techniques that actually work?</span></p>
+                    <div class="post-actions">
+                        <button class="support-btn" onclick="showSupport(this)">💙 <span data-en="Support" data-mr="सहाय्य">Support</span> (12)</button>
+                        <button class="reply-btn" onclick="showReplyForm(this)">💬 <span data-en="Reply" data-mr="उत्तर द्या">Reply</span></button>
+                    </div>
+                </div>
+
+                <div class="forum-post">
+                    <h4><span data-en="Feeling Overwhelmed with Course Load" data-mr="अभ्यासक्रमाच्या भाराने भारावून जाणे">Feeling Overwhelmed with Course Load</span></h4>
+                    <div class="post-meta"><span data-en="Anonymous Student • 5 hours ago" data-mr="अज्ञात विद्यार्थी • ५ तासांपूर्वी">Anonymous Student • 5 hours ago</span></div>
+                    <p><span data-en="Taking 6 courses this semester and working part-time. I feel like I'm drowning. Any advice on time management?" data-mr="या सेमेस्टरमध्ये ६ कोर्स घेत आहे आणि अर्धवेळ काम करत आहे. मला वाटते की मी बुडत आहे. वेळ व्यवस्थापनावर काही सल्ला आहे का?">Taking 6 courses this semester and working part-time. I feel like I'm drowning. Any advice on time management?</span></p>
+                    <div class="post-actions">
+                        <button class="support-btn" onclick="showSupport(this)">💙 <span data-en="Support" data-mr="सहाय्य">Support</span> (8)</button>
+                        <button class="reply-btn" onclick="showReplyForm(this)">💬 <span data-en="Reply" data-mr="उत्तर द्या">Reply</span></button>
+                    </div>
+                </div>
+
+                <div class="forum-post">
+                    <h4><span data-en="Success Story: Overcoming Social Anxiety" data-mr="यशाची कहाणी: सामाजिक चिंतेवर मात करणे">Success Story: Overcoming Social Anxiety</span></h4>
+                    <div class="post-meta"><span data-en="Anonymous Student • 1 day ago" data-mr="अज्ञात विद्यार्थी • १ दिवसापूर्वी">Anonymous Student • 1 day ago</span></div>
+                    <p><span data-en="Just wanted to share that I finally joined a study group after months of avoiding social situations. Small steps really do work!" data-mr="फक्त सामायिक करायचे होते की महिन्यांनंतर सामाजिक परिस्थिती टाळल्यानंतर मी शेवटी अभ्यास गटात सामील झालो. छोटी पावले खरोखर काम करतात!">Just wanted to share that I finally joined a study group after months of avoiding social situations. Small steps really do work!</span></p>
+                    <div class="post-actions">
+                        <button class="support-btn" onclick="showSupport(this)">💙 <span data-en="Support" data-mr="सहाय्य">Support</span> (24)</button>
+                        <button class="reply-btn" onclick="showReplyForm(this)">💬 <span data-en="Reply" data-mr="उत्तर द्या">Reply</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple MindCare App - Essential functionality only
+        console.log('AarogyaTech app loading...');
+
+        // Global variables
+        let currentLanguage = 'en';
+
+        // Login Selection Functions
+        function showLoginSelection() {
+            document.getElementById('loginSelection').style.display = 'flex';
+            document.getElementById('studentLoginOverlay').style.display = 'none';
+            document.getElementById('adminLoginOverlay').style.display = 'none';
+        }
+
+        function showStudentLogin() {
+            document.getElementById('loginSelection').style.display = 'none';
+            document.getElementById('studentLoginOverlay').style.display = 'flex';
+        }
+
+        function showAdminLogin() {
+            document.getElementById('loginSelection').style.display = 'none';
+            document.getElementById('adminLoginOverlay').style.display = 'flex';
+        }
+
+        // Student Login functionality
+        function handleStudentLogin(event) {
+            console.log('handleStudentLogin called');
+            event.preventDefault();
+
+            const email = document.getElementById('studentEmail').value;
+            const password = document.getElementById('studentPassword').value;
+
+            console.log('Student Email:', email, 'Password length:', password.length);
+
+            if (email && password) {
+                console.log('Student login successful, updating UI');
+
+                // Update user info
+                document.getElementById('currentUserName').textContent = email.split('@')[0];
+                document.getElementById('currentUserEmail').textContent = email;
+
+                // Hide login overlay and show main app
+                document.getElementById('studentLoginOverlay').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+
+                console.log('Student UI updated successfully');
+            } else {
+                console.log('Email or password missing');
+                alert('Please enter both email and password');
+            }
+        }
+
+        // Admin Login functionality
+        function handleAdminLogin(event) {
+            console.log('handleAdminLogin called');
+            event.preventDefault();
+
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            const role = document.getElementById('userRole').value;
+
+            console.log('Admin Username:', username, 'Role:', role, 'Password length:', password.length);
+
+            // Simple demo authentication
+            const validCredentials = {
+                'admin': 'admin123',
+                'counselor': 'counselor123'
+            };
+
+            if (username && password && validCredentials[username] === password) {
+                console.log('Admin login successful, redirecting to dashboard');
+                
+                // Redirect to admin dashboard
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                console.log('Invalid credentials');
+                alert('Invalid credentials. Use admin/admin123 or counselor/counselor123');
+            }
+        }
+
+        function logout() {
+            console.log('Logout called');
+            // Show login selection and hide main app
+            document.getElementById('loginSelection').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+
+            // Clear forms
+            document.getElementById('studentEmail').value = '';
+            document.getElementById('studentPassword').value = '';
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        // Language switching
+        function switchLanguage(lang) {
+            console.log('Switching language to:', lang);
+            currentLanguage = lang;
+
+            // Update language buttons
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.getElementById('lang' + lang.charAt(0).toUpperCase() + lang.slice(1)).classList.add('active');
+
+            // Update text content
+            document.querySelectorAll('[data-' + lang + ']').forEach(element => {
+                element.textContent = element.getAttribute('data-' + lang);
+            });
+
+            // Update placeholders
+            document.querySelectorAll('[data-placeholder-' + lang + ']').forEach(element => {
+                element.placeholder = element.getAttribute('data-placeholder-' + lang);
+            });
+        }
+
+        // Simple navigation
+        function showSection(sectionName) {
+            console.log('Showing section:', sectionName);
+
+            // Hide all sections
+            document.querySelectorAll('.content-area').forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionName);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Update navigation buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Find and activate the corresponding nav button
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => {
+                if (btn.onclick && btn.onclick.toString().includes(sectionName)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Simple chat functionality (placeholder)
+        // Enhanced chat functionality with AI integration
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            if (input && input.value.trim()) {
+                const message = input.value.trim();
+                console.log('Sending message:', message);
+
+                // Add user message to chat
+                addMessageToChat('user', message);
+
+                // Clear input
+                input.value = '';
+
+                // Show processing indicator
+                showProcessingIndicator();
+
+                try {
+                    // Get AI response
+                    const response = await getAIResponse(message);
+
+                    if (response) {
+                        // Add bot response to chat
+                        addMessageToChat('bot', response);
+
+                        // If voice-to-voice mode, also play the response
+                        if (currentVoiceMode === 'voice-to-voice') {
+                            await textToSpeech(response);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error getting AI response:', error);
+                    addMessageToChat('bot', "I'm sorry, I'm having trouble responding right now. Please try again.");
+                } finally {
+                    hideProcessingIndicator();
+                }
+            }
+        }
+
+        function addMessageToChat(sender, message) {
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+                chatMessages.appendChild(messageDiv);
+
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Handle Enter key in chat input
+        function handleEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // Handle AI language selection
+        function setAILanguage(language) {
+            console.log('AI language set to:', language);
+            // This would be used for API calls to set the AI response language
+            // For now, we'll just log it
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('MindCare app initialized');
+
+            // Set initial language
+            switchLanguage('en');
+
+            // Show login selection by default
+            showLoginSelection();
+
+            // Check voice feature availability
+            checkVoiceFeatureSupport();
+            
+            // Initialize voice manager (after other initialization)
+            setTimeout(initializeVoiceManager, 1000);
+
+            console.log('App initialization complete');
+        });
+
+        // Check if voice features are supported
+        function checkVoiceFeatureSupport() {
+            const speechRecognitionSupported = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+            const speechSynthesisSupported = 'speechSynthesis' in window;
+            
+            console.log('Voice feature support:');
+            console.log('- Speech Recognition:', speechRecognitionSupported);
+            console.log('- Speech Synthesis:', speechSynthesisSupported);
+            
+            if (!speechRecognitionSupported) {
+                console.warn('Speech recognition not supported in this browser');
+                // You could show a warning to the user here
+            }
+            
+            if (!speechSynthesisSupported) {
+                console.warn('Speech synthesis not supported in this browser');
+                // You could show a warning to the user here
+            }
+            
+            return {
+                speechRecognition: speechRecognitionSupported,
+                speechSynthesis: speechSynthesisSupported
+            };
+        }
+
+        // Booking functionality
+        async function handleBooking(event) {
+            event.preventDefault();
+            console.log('Booking form submitted');
+            
+            const formData = {
+                studentId: document.getElementById('studentId').value,
+                preferredDate: document.getElementById('preferredDate').value,
+                preferredTime: document.getElementById('preferredTime').value,
+                sessionType: document.getElementById('sessionType').value,
+                concerns: document.getElementById('concerns').value,
+                contactMethod: document.getElementById('contactMethod').value,
+                contactInfo: document.getElementById('contactInfo').value
+            };
+            
+            console.log('Booking data:', formData);
+            
+            // Show loading state
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span data-en="Submitting..." data-mr="सबमिट करत आहे...">Submitting...</span>';
+            submitBtn.disabled = true;
+            
+            try {
+                // Submit booking to backend API
+                const response = await fetch('/api/booking/appointments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Success - show confirmation
+                    console.log('Booking created successfully:', result.booking);
+                    
+                    // Show success message with booking details
+                    const message = currentLanguage === 'mr' ? 
+                        `तुमची भेट यशस्वीपणे बुक झाली! भेट ID: ${result.booking.id}\n\nतुम्हाला 24 तासांच्या आत संपर्क करण्यात येईल.` :
+                        `Appointment booked successfully! Booking ID: ${result.booking.id}\n\nYou will be contacted within 24 hours to confirm your session.`;
+                    
+                    alert(message);
+                    
+                    // Clear form
+                    document.querySelector('.booking-form').reset();
+                } else {
+                    // Error from server
+                    console.error('Booking submission failed:', result);
+                    const errorMessage = currentLanguage === 'mr' ? 
+                        `भेट बुक करताना त्रुटी: ${result.message || 'अज्ञात त्रुटी'}` :
+                        `Error booking appointment: ${result.message || 'Unknown error'}`;
+                    alert(errorMessage);
+                }
+            } catch (error) {
+                console.error('Network error during booking submission:', error);
+                const errorMessage = currentLanguage === 'mr' ? 
+                    'नेटवर्क त्रुटी. कृपया पुन्हा प्रयत्न करा.' :
+                    'Network error. Please try again.';
+                alert(errorMessage);
+            } finally {
+                // Restore button state
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        // Resources functionality
+        function showResourceDetail(resourceType) {
+            console.log('Showing resource detail:', resourceType);
+            
+            // Hide resources home
+            document.getElementById('resourcesHome').style.display = 'none';
+            
+            // Hide all resource details
+            document.querySelectorAll('.resource-detail').forEach(detail => {
+                detail.style.display = 'none';
+            });
+            
+            // Show selected resource detail
+            const detailElement = document.getElementById(resourceType + 'Detail');
+            if (detailElement) {
+                detailElement.style.display = 'block';
+            }
+        }
+
+        function showResourcesHome() {
+            console.log('Showing resources home');
+            
+            // Hide all resource details
+            document.querySelectorAll('.resource-detail').forEach(detail => {
+                detail.style.display = 'none';
+            });
+            
+            // Show resources home
+            document.getElementById('resourcesHome').style.display = 'block';
+        }
+
+        // Meditation timer functionality
+        let timerInterval = null;
+        let timerMinutes = 5;
+        let timerSeconds = 0;
+        let isTimerRunning = false;
+
+        function startTimer(minutes) {
+            timerMinutes = minutes;
+            timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        function toggleTimer() {
+            if (isTimerRunning) {
+                pauseTimer();
+            } else {
+                resumeTimer();
+            }
+        }
+
+        function resumeTimer() {
+            isTimerRunning = true;
+            document.getElementById('timerControl').innerHTML = '<span data-en="Pause" data-mr="थांबवा">Pause</span>';
+            
+            timerInterval = setInterval(() => {
+                if (timerSeconds === 0) {
+                    if (timerMinutes === 0) {
+                        // Timer finished
+                        pauseTimer();
+                        alert('Meditation session complete! 🧘');
+                        return;
+                    }
+                    timerMinutes--;
+                    timerSeconds = 59;
+                } else {
+                    timerSeconds--;
+                }
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            document.getElementById('timerControl').innerHTML = '<span data-en="Start" data-mr="सुरुवात">Start</span>';
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerMinutes = 5;
+            timerSeconds = 0;
+            updateTimerDisplay();
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            if (display) {
+                const mins = timerMinutes.toString().padStart(2, '0');
+                const secs = timerSeconds.toString().padStart(2, '0');
+                display.textContent = `${mins}:${secs}`;
+            }
+        }
+
+        // Peer Support functionality
+        function showNewPostForm() {
+            document.getElementById('newPostForm').style.display = 'block';
+        }
+
+        function cancelPost() {
+            document.getElementById('newPostForm').style.display = 'none';
+            document.getElementById('newPostContent').value = '';
+        }
+
+        function submitPost() {
+            const content = document.getElementById('newPostContent').value.trim();
+            if (!content) {
+                alert('Please enter some content for your post.');
+                return;
+            }
+            
+            // Create new post element
+            const postElement = document.createElement('div');
+            postElement.className = 'forum-post';
+            postElement.innerHTML = `
+                <h4><span data-en="Anonymous Post" data-mr="अज्ञात पोस्ट">Anonymous Post</span></h4>
+                <div class="post-meta"><span data-en="Anonymous Student • Just now" data-mr="अज्ञात विद्यार्थी • आत्ताच">Anonymous Student • Just now</span></div>
+                <p>${content}</p>
+                <div class="post-actions">
+                    <button class="support-btn" onclick="showSupport(this)">💙 <span data-en="Support" data-mr="सहाय्य">Support</span> (0)</button>
+                    <button class="reply-btn" onclick="showReplyForm(this)">💬 <span data-en="Reply" data-mr="उत्तर द्या">Reply</span></button>
+                </div>
+            `;
+            
+            // Add to forum posts
+            const forumPosts = document.getElementById('forumPosts');
+            forumPosts.insertBefore(postElement, forumPosts.firstChild);
+            
+            // Clear form and hide
+            cancelPost();
+            
+            alert('Your post has been shared anonymously. Thank you for contributing to our community!');
+        }
+
+        function showSupport(button) {
+            button.classList.toggle('active');
+            const countText = button.textContent;
+            const currentCount = parseInt(countText.match(/\((\d+)\)/)[1]);
+            const newCount = button.classList.contains('active') ? currentCount + 1 : currentCount - 1;
+            button.innerHTML = button.innerHTML.replace(/\(\d+\)/, `(${newCount})`);
+        }
+
+        function showReplyForm(button) {
+            // Simple implementation - in a real app, this would show a reply form
+            alert('Reply functionality would be implemented here in a full application.');
+        }
+
+        // Error handling
+        window.addEventListener('error', function (e) {
+            console.error('JavaScript Error:', e.error);
+            console.error('File:', e.filename, 'Line:', e.lineno);
+        });
+        
+        // ========== SCREENING TOOLS FUNCTIONALITY ==========
+        
+        // Screening tools data (frontend version of backend models)
+        const ScreeningTools = {
+            'PHQ-9': {
+                name: 'PHQ-9',
+                fullName: 'Patient Health Questionnaire-9',
+                timeframe: 'over the last 2 weeks',
+                questions: [
+                    { id: 'phq9_1', text: 'Little interest or pleasure in doing things', textMr: 'की करण्यात कमी रस किंवा आनंद' },
+                    { id: 'phq9_2', text: 'Feeling down, depressed, or hopeless', textMr: 'उदास, नैराश्यग्रस्त किंवा निराश वाटणे' },
+                    { id: 'phq9_3', text: 'Trouble falling or staying asleep, or sleeping too much', textMr: 'झोप येण्यात किंवा झोपेत राहण्यात अडचण, किंवा जास्त झोपणे' },
+                    { id: 'phq9_4', text: 'Feeling tired or having little energy', textMr: 'दम वाटणे किंवा कमी उर्जा असणे' },
+                    { id: 'phq9_5', text: 'Poor appetite or overeating', textMr: 'कमी भूक किंवा जास्त खाणे' },
+                    { id: 'phq9_6', text: 'Feeling bad about yourself - or that you are a failure or have let yourself or your family down', textMr: 'स्वतःबद्दल वाईट वाटणे - किंवा आपण अयशस्वी आहोत किंवा स्वतःला किंवा कुटुंबाला निराश केले आहे' },
+                    { id: 'phq9_7', text: 'Trouble concentrating on things, such as reading the newspaper or watching television', textMr: 'विषयांवर लक्ष केंद्रित करण्यात अडचण, जसे वर्तमानपत्र वाचणे किंवा दूरचित्र पाहणे' },
+                    { id: 'phq9_8', text: 'Moving or speaking so slowly that other people could have noticed. Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual', textMr: 'इतक्या हळू हलणे किंवा बोलणे की इतर लोकांच्या लक्षात आले. किंवा उलट - इतके अस्वस्थ किंवा बेचैन की नेहमीपेक्षा जास्त फिरत आहात' },
+                    { id: 'phq9_9', text: 'Thoughts that you would be better off dead, or of hurting yourself in some way', textMr: 'आपण मेलो तर चांगले होईल, किंवा कोणत्या प्रकारे स्वतःला दुखाव्याचे विचार', crisisItem: true }
+                ],
+                responseOptions: [
+                    { value: 0, text: 'Not at all', textMr: 'अजिबात नाही' },
+                    { value: 1, text: 'Several days', textMr: 'अनेक दिवस' },
+                    { value: 2, text: 'More than half the days', textMr: 'अर्ध्यापेक्षा जास्त दिवस' },
+                    { value: 3, text: 'Nearly every day', textMr: 'जवळजवळ दररोज' }
+                ],
+                scoring: {
+                    ranges: [
+                        { min: 0, max: 4, level: 'minimal', description: 'Minimal depression', descriptionMr: 'कमिनल नैराश्य' },
+                        { min: 5, max: 9, level: 'mild', description: 'Mild depression', descriptionMr: 'सौम्य नैराश्य' },
+                        { min: 10, max: 14, level: 'moderate', description: 'Moderate depression', descriptionMr: 'मध्यम नैराश्य' },
+                        { min: 15, max: 19, level: 'moderately_severe', description: 'Moderately severe depression', descriptionMr: 'मध्यम तीव्र नैराश्य' },
+                        { min: 20, max: 27, level: 'severe', description: 'Severe depression', descriptionMr: 'तीव्र नैराश्य' }
+                    ],
+                    maxScore: 27,
+                    clinicalCutoff: 10
+                }
+            },
+            'GAD-7': {
+                name: 'GAD-7',
+                fullName: 'Generalized Anxiety Disorder 7-item scale',
+                timeframe: 'over the last 2 weeks',
+                questions: [
+                    { id: 'gad7_1', text: 'Feeling nervous, anxious, or on edge', textMr: 'चिंताग्रस्त, अस्वस्थ किंवा तणावात वाटणे' },
+                    { id: 'gad7_2', text: 'Not being able to stop or control worrying', textMr: 'चिंता थांबवणे किंवा नियंत्रित करणे शक्य न होणे' },
+                    { id: 'gad7_3', text: 'Worrying too much about different things', textMr: 'वेगवेगळ्या गोष्टींबद्दल जास्त चिंता करणे' },
+                    { id: 'gad7_4', text: 'Trouble relaxing', textMr: 'आराम करण्यात अडचण' },
+                    { id: 'gad7_5', text: 'Being so restless that it is hard to sit still', textMr: 'इतके अस्वस्थ की शांत बसणे कठीण' },
+                    { id: 'gad7_6', text: 'Becoming easily annoyed or irritable', textMr: 'सहजपणे चिडलेले किंवा चिडचिडाहट होणे' },
+                    { id: 'gad7_7', text: 'Feeling afraid, as if something awful might happen', textMr: 'काही भयानक घटना घडू शकते असा भीती वाटणे' }
+                ],
+                responseOptions: [
+                    { value: 0, text: 'Not at all', textMr: 'अजिबात नाही' },
+                    { value: 1, text: 'Several days', textMr: 'अनेक दिवस' },
+                    { value: 2, text: 'More than half the days', textMr: 'अर्ध्यापेक्षा जास्त दिवस' },
+                    { value: 3, text: 'Nearly every day', textMr: 'जवळजवळ दररोज' }
+                ],
+                scoring: {
+                    ranges: [
+                        { min: 0, max: 4, level: 'minimal', description: 'Minimal anxiety', descriptionMr: 'कमिनल चिंता' },
+                        { min: 5, max: 9, level: 'mild', description: 'Mild anxiety', descriptionMr: 'सौम्य चिंता' },
+                        { min: 10, max: 14, level: 'moderate', description: 'Moderate anxiety', descriptionMr: 'मध्यम चिंता' },
+                        { min: 15, max: 21, level: 'severe', description: 'Severe anxiety', descriptionMr: 'तीव्र चिंता' }
+                    ],
+                    maxScore: 21,
+                    clinicalCutoff: 10
+                }
+            },
+            'GHQ-12': {
+                name: 'GHQ-12',
+                fullName: 'General Health Questionnaire-12',
+                timeframe: 'over the past few weeks',
+                questions: [
+                    { id: 'ghq12_1', text: 'Been able to concentrate on whatever you\'re doing', textMr: 'तुम्ही जे काम करत आहात त्यावर फक्त लक्ष केंद्रित करू शकात', positiveItem: true },
+                    { id: 'ghq12_2', text: 'Lost much sleep over worry', textMr: 'चिंतेमुळे जास्त झोप गमावली' },
+                    { id: 'ghq12_3', text: 'Felt that you were playing a useful part in things', textMr: 'तुम्ही गोष्टींमध्ये उपयुक्त भूमिका बजावत आहात असे वाटले', positiveItem: true },
+                    { id: 'ghq12_4', text: 'Felt capable of making decisions about things', textMr: 'गोष्टींबद्दल निर्णय घेण्यास समर्थ वाटले', positiveItem: true },
+                    { id: 'ghq12_5', text: 'Felt constantly under strain', textMr: 'सातत्य तणावाखाली असल्याचे वाटले' },
+                    { id: 'ghq12_6', text: 'Felt you couldn\'t overcome your difficulties', textMr: 'आपल्या अडचणींवर मात करू शकणार नाही असे वाटले' },
+                    { id: 'ghq12_7', text: 'Been able to enjoy your normal day-to-day activities', textMr: 'आपल्या सामान्य दैनंदिन कर्तव्यांचा आनंद घेता आला', positiveItem: true },
+                    { id: 'ghq12_8', text: 'Been able to face up to problems', textMr: 'समस्यांचा सामना करू शकात', positiveItem: true },
+                    { id: 'ghq12_9', text: 'Been feeling unhappy or depressed', textMr: 'दुखी किंवा नैराश्यग्रस्त वाटले' },
+                    { id: 'ghq12_10', text: 'Been losing confidence in yourself', textMr: 'स्वतःमध्ये आत्मविश्वास गमावला' },
+                    { id: 'ghq12_11', text: 'Been thinking of yourself as a worthless person', textMr: 'स्वतःला निरर्थक व्यक्ती मानले' },
+                    { id: 'ghq12_12', text: 'Been feeling reasonably happy, all things considered', textMr: 'सर्वकाही विचारात घेता, योग्य रीतीने आनंदी वाटले', positiveItem: true }
+                ],
+                responseOptions: [
+                    { value: 0, text: 'Better than usual', textMr: 'नेहमीपेक्षा चांगले' },
+                    { value: 1, text: 'Same as usual', textMr: 'नेहमीसारखे' },
+                    { value: 2, text: 'Less than usual', textMr: 'नेहमीपेक्षा कमी' },
+                    { value: 3, text: 'Much less than usual', textMr: 'नेहमीपेक्षा जास्त कमी' }
+                ],
+                alternativeResponseOptions: [
+                    { value: 0, text: 'More so than usual', textMr: 'नेहमीपेक्षा जास्त' },
+                    { value: 1, text: 'Same as usual', textMr: 'नेहमीसारखे' },
+                    { value: 2, text: 'Less so than usual', textMr: 'नेहमीपेक्षा कमी' },
+                    { value: 3, text: 'Much less so than usual', textMr: 'नेहमीपेक्षा जास्त कमी' }
+                ],
+                scoring: {
+                    ranges: [
+                        { min: 0, max: 11, level: 'normal', description: 'No psychological distress', descriptionMr: 'कोणताही मानसिक त्रास नाही' },
+                        { min: 12, max: 15, level: 'mild', description: 'Mild psychological distress', descriptionMr: 'सौम्य मानसिक त्रास' },
+                        { min: 16, max: 20, level: 'moderate', description: 'Moderate psychological distress', descriptionMr: 'मध्यम मानसिक त्रास' },
+                        { min: 21, max: 36, level: 'severe', description: 'Severe psychological distress', descriptionMr: 'तीव्र मानसिक त्रास' }
+                    ],
+                    maxScore: 36,
+                    clinicalCutoff: 12
+                }
+            }
+        };
+        
+        // Screening navigation functions
+        function showScreeningHome() {
+            document.querySelectorAll('.screening-detail').forEach(detail => {
+                detail.style.display = 'none';
+            });
+            document.getElementById('screeningHome').style.display = 'block';
+        }
+        
+        function showScreeningTool(toolKey) {
+            const toolMap = {
+                'phq9': 'phq9Screening',
+                'gad7': 'gad7Screening', 
+                'ghq12': 'ghq12Screening'
+            };
+            
+            // Hide home screen
+            document.getElementById('screeningHome').style.display = 'none';
+            
+            // Hide all other screening details
+            document.querySelectorAll('.screening-detail').forEach(detail => {
+                detail.style.display = 'none';
+            });
+            
+            // Show selected screening tool
+            const targetElement = document.getElementById(toolMap[toolKey]);
+            if (targetElement) {
+                targetElement.style.display = 'block';
+                
+                // Generate questions for the tool
+                generateScreeningQuestions(toolKey);
+            }
+        }
+        
+        // Generate questions for each screening tool
+        function generateScreeningQuestions(toolKey) {
+            const toolData = getToolData(toolKey);
+            if (!toolData) return;
+            
+            const questionsContainer = document.getElementById(`${toolKey}Questions`);
+            if (!questionsContainer) return;
+            
+            let questionsHTML = '';
+            
+            toolData.questions.forEach((question, index) => {
+                const questionNumber = index + 1;
+                const responseOptions = getResponseOptions(toolData, question);
+                
+                questionsHTML += `
+                    <div class="question-group" style="margin-bottom: 25px; padding: 20px; background: rgba(30, 41, 59, 0.3); border-radius: 8px; ${question.crisisItem ? 'border: 2px solid rgba(239, 68, 68, 0.5);' : ''}">
+                        ${question.crisisItem ? '<div style="color: #ef4444; font-weight: bold; margin-bottom: 10px;">⚠️ Important Question</div>' : ''}
+                        <h4 style="color: #f3f4f6; margin-bottom: 15px;">
+                            ${questionNumber}. <span data-en="${question.text}" data-mr="${question.textMr || question.text}">${currentLanguage === 'mr' && question.textMr ? question.textMr : question.text}</span>
+                        </h4>
+                        <div class="response-options" style="display: grid; gap: 10px;">
+                            ${responseOptions.map(option => `
+                                <label style="display: flex; align-items: center; padding: 10px; background: rgba(15, 23, 42, 0.6); border-radius: 5px; cursor: pointer; transition: background-color 0.2s;">
+                                    <input type="radio" name="${question.id}" value="${option.value}" style="margin-right: 10px;">
+                                    <span data-en="${option.text}" data-mr="${option.textMr || option.text}">${currentLanguage === 'mr' && option.textMr ? option.textMr : option.text}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+            
+            questionsContainer.innerHTML = questionsHTML;
+        }
+        
+        // Get appropriate response options for a question
+        function getResponseOptions(toolData, question) {
+            if (toolData.name === 'GHQ-12' && question.positiveItem) {
+                return toolData.alternativeResponseOptions || toolData.responseOptions;
+            }
+            return toolData.responseOptions;
+        }
+        
+        // Get tool data by key
+        function getToolData(toolKey) {
+            const toolMap = {
+                'phq9': 'PHQ-9',
+                'gad7': 'GAD-7',
+                'ghq12': 'GHQ-12'
+            };
+            return ScreeningTools[toolMap[toolKey]];
+        }
+        
+        // Calculate PHQ-9 Score
+        function calculatePHQ9Score() {
+            const responses = getFormResponses('phq9Form');
+            const toolData = getToolData('phq9');
+            
+            if (!validateAllQuestionsAnswered('phq9Form', toolData)) return;
+            
+            const result = calculateScreeningScore('phq9', responses);
+            displayScreeningResults('phq9Results', result, toolData);
+        }
+        
+        // Calculate GAD-7 Score
+        function calculateGAD7Score() {
+            const responses = getFormResponses('gad7Form');
+            const toolData = getToolData('gad7');
+            
+            if (!validateAllQuestionsAnswered('gad7Form', toolData)) return;
+            
+            const result = calculateScreeningScore('gad7', responses);
+            displayScreeningResults('gad7Results', result, toolData);
+        }
+        
+        // Calculate GHQ-12 Score
+        function calculateGHQ12Score() {
+            const responses = getFormResponses('ghq12Form');
+            const toolData = getToolData('ghq12');
+            
+            if (!validateAllQuestionsAnswered('ghq12Form', toolData)) return;
+            
+            const result = calculateScreeningScore('ghq12', responses);
+            displayScreeningResults('ghq12Results', result, toolData);
+        }
+        
+        // Get form responses
+        function getFormResponses(formId) {
+            const form = document.getElementById(formId);
+            const responses = {};
+            
+            form.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                responses[input.name] = parseInt(input.value);
+            });
+            
+            return responses;
+        }
+        
+        // Validate that all questions are answered
+        function validateAllQuestionsAnswered(formId, toolData) {
+            const responses = getFormResponses(formId);
+            const allQuestionIds = toolData.questions.map(q => q.id);
+            
+            for (let questionId of allQuestionIds) {
+                if (responses[questionId] === undefined) {
+                    const questionNumber = allQuestionIds.indexOf(questionId) + 1;
+                    alert(`Please answer question ${questionNumber} before calculating results.`);
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // Calculate screening score
+        function calculateScreeningScore(toolKey, responses) {
+            const toolData = getToolData(toolKey);
+            let totalScore = 0;
+            const detailedScoring = [];
+            let crisisAlerts = [];
+            
+            toolData.questions.forEach((question, index) => {
+                const responseValue = responses[question.id] || 0;
+                let adjustedValue = responseValue;
+                
+                // Handle GHQ-12 scoring (no adjustment for standard scoring)
+                // For simplicity, we'll use standard scoring here
+                
+                totalScore += adjustedValue;
+                detailedScoring.push({
+                    questionId: question.id,
+                    questionNumber: index + 1,
+                    responseValue: responseValue,
+                    adjustedValue: adjustedValue,
+                    questionText: currentLanguage === 'mr' && question.textMr ? question.textMr : question.text
+                });
+                
+                // Check for crisis indicators
+                if (question.crisisItem && responseValue > 0) {
+                    crisisAlerts.push({
+                        type: 'suicidalIdeation',
+                        severity: 'high',
+                        message: currentLanguage === 'mr' 
+                            ? 'आत्महत्येचे विचार आढळले आहेत. तत्काळ व्यावसायिक मदत घ्या.' 
+                            : 'Suicidal thoughts detected. Please seek immediate professional help.'
+                    });
+                }
+            });
+            
+            // Find severity level
+            const range = toolData.scoring.ranges.find(r => totalScore >= r.min && totalScore <= r.max);
+            const isAboveThreshold = totalScore >= toolData.scoring.clinicalCutoff;
+            
+            // Check for crisis based on total score
+            if (toolKey === 'phq9' && totalScore >= 20) {
+                crisisAlerts.push({
+                    type: 'severeDepression',
+                    severity: 'high',
+                    message: currentLanguage === 'mr'
+                        ? 'तीव्र नैराश्याची लक्षणे आढळली आहेत. तुरत व्यावसायिक मूल्यांकन आवश्यक आहे.'
+                        : 'Severe depression symptoms detected. Urgent professional evaluation recommended.'
+                });
+            } else if (toolKey === 'gad7' && totalScore >= 15) {
+                crisisAlerts.push({
+                    type: 'severeAnxiety', 
+                    severity: 'high',
+                    message: currentLanguage === 'mr'
+                        ? 'तीव्र चिंतेची लक्षणे आढळली आहेत. तुरत व्यावसायिक मूल्यांकन आवश्यक आहे.'
+                        : 'Severe anxiety symptoms detected. Urgent professional evaluation recommended.'
+                });
+            } else if (toolKey === 'ghq12' && totalScore >= 21) {
+                crisisAlerts.push({
+                    type: 'severeDistress',
+                    severity: 'high', 
+                    message: currentLanguage === 'mr'
+                        ? 'तीव्र मानसिक त्रास आढळला आहे. तुरत व्यावसायिक मूल्यांकन आवश्यक आहे.'
+                        : 'Severe psychological distress detected. Urgent professional evaluation recommended.'
+                });
+            }
+            
+            return {
+                toolName: toolData.fullName,
+                totalScore,
+                maxScore: toolData.scoring.maxScore,
+                level: range ? range.level : 'unknown',
+                description: range ? (currentLanguage === 'mr' && range.descriptionMr ? range.descriptionMr : range.description) : 'Score out of range',
+                isAboveThreshold,
+                clinicalCutoff: toolData.scoring.clinicalCutoff,
+                crisisAlerts,
+                requiresImmediateAttention: crisisAlerts.length > 0,
+                detailedScoring,
+                recommendations: generateRecommendations(toolKey, range ? range.level : 'unknown', totalScore, crisisAlerts.length > 0)
+            };
+        }
+        
+        // Generate recommendations based on score
+        function generateRecommendations(toolKey, level, score, hasCrisis) {
+            let recommendations = [];
+            
+            if (hasCrisis) {
+                recommendations = currentLanguage === 'mr' ? [
+                    'तत्काळ सुरक्षा मूल्यांकन आवश्यक',
+                    'संकट हस्तक्षेप सेवांशी संपर्क साधा',
+                    'तुरत व्यावसायिक मूल्यांकनाची व्यवस्था करा'
+                ] : [
+                    'Immediate safety assessment required',
+                    'Contact crisis intervention services', 
+                    'Arrange urgent professional evaluation'
+                ];
+            } else if (level === 'severe' || level === 'moderately_severe') {
+                recommendations = currentLanguage === 'mr' ? [
+                    'व्यावसायिक मानसिक आरोग्य मूल्यांकन मिळवा',
+                    'आरोग्यसेवा प्रदात्याशी संपर्क साधा',
+                    'आवश्यक असल्यास संकट सहाय्याचा विचार करा'
+                ] : [
+                    'Seek professional mental health evaluation',
+                    'Contact healthcare provider',
+                    'Consider crisis support if needed'
+                ];
+            } else if (level === 'moderate') {
+                recommendations = currentLanguage === 'mr' ? [
+                    'समुपदेशन किंवा थेरपीचा विचार करा',
+                    'आरोग्यसेवा प्रदात्यासोबत परिणामांवर चर्चा करा',
+                    'स्व-काळजी रणनीती अंमलात आणा'
+                ] : [
+                    'Consider counseling or therapy',
+                    'Discuss results with healthcare provider',
+                    'Implement self-care strategies'
+                ];
+            } else {
+                recommendations = currentLanguage === 'mr' ? [
+                    'स्व-काळजी पद्धतींना चालू ठेवा',
+                    'लक्षणे लक्षात ठेवा',
+                    'लक्षणे वाढल्यास मदत मागा'
+                ] : [
+                    'Continue self-care practices',
+                    'Monitor symptoms',
+                    'Seek support if symptoms worsen'
+                ];
+            }
+            
+            return recommendations;
+        }
+        
+        // Display screening results
+        function displayScreeningResults(resultsDivId, result, toolData) {
+            const resultsDiv = document.getElementById(resultsDivId);
+            if (!resultsDiv) return;
+            
+            const severityColor = getSeverityColor(result.level);
+            const crisisHTML = result.crisisAlerts.length > 0 ? `
+                <div class="crisis-alert" style="background: rgba(239, 68, 68, 0.1); border: 2px solid rgba(239, 68, 68, 0.5); padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+                    <h4 style="color: #ef4444; margin-bottom: 15px;">🚨 <span data-en="Crisis Alert" data-mr="संकट सूचना">Crisis Alert</span></h4>
+                    ${result.crisisAlerts.map(alert => `
+                        <p style="color: #ef4444; font-weight: bold;">${alert.message}</p>
+                    `).join('')}
+                    <div style="margin-top: 15px;">
+                        <h5 style="color: #ef4444;"><span data-en="Emergency Resources:" data-mr="आपत्कालीन संसाधने:">Emergency Resources:</span></h5>
+                        <ul style="color: #ef4444;">
+                            <li><strong><span data-en="National Suicide Prevention Lifeline:" data-mr="राष्ट्रीय आत्महत्या प्रतिबंध लाइफलाइन:">National Suicide Prevention Lifeline:</span></strong> <a href="tel:988" style="color: #ef4444;">988</a></li>
+                            <li><strong><span data-en="Crisis Text Line:" data-mr="संकट मजकूर लाइन:">Crisis Text Line:</span></strong> <span data-en="Text HOME to 741741" data-mr="741741 वर HOME मजकूर पाठवा">Text HOME to 741741</span></li>
+                            <li><strong><span data-en="Emergency Services:" data-mr="आपत्कालीन सेवा:">Emergency Services:</span></strong> <a href="tel:911" style="color: #ef4444;">911</a></li>
+                        </ul>
+                    </div>
+                </div>
+            ` : '';
+            
+            resultsDiv.innerHTML = `
+                <div class="screening-result-card" style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(139, 92, 246, 0.3); padding: 30px; border-radius: 10px;">
+                    <h3 style="color: #f3f4f6; margin-bottom: 20px;">📋 <span data-en="Screening Results" data-mr="तपासणी परिणाम">Screening Results</span></h3>
+                    
+                    ${crisisHTML}
+                    
+                    <div class="score-summary" style="margin-bottom: 25px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 18px; color: #f3f4f6;"><span data-en="Your Score:" data-mr="तुमचा गुण:">Your Score:</span></span>
+                            <span style="font-size: 24px; font-weight: bold; color: ${severityColor};">${result.totalScore}/${result.maxScore}</span>
+                        </div>
+                        <div class="score-bar" style="background: rgba(75, 85, 99, 0.5); height: 20px; border-radius: 10px; overflow: hidden;">
+                            <div style="background: ${severityColor}; height: 100%; width: ${(result.totalScore / result.maxScore) * 100}%; border-radius: 10px; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="severity-level" style="margin-bottom: 25px;">
+                        <h4 style="color: #f3f4f6; margin-bottom: 10px;"><span data-en="Severity Level:" data-mr="तीव्रता पातळी:">Severity Level:</span></h4>
+                        <div style="background: rgba(${severityColor.replace('#', '').match(/.{2}/g).map(hex => parseInt(hex, 16)).join(', ')}, 0.2); border: 1px solid ${severityColor}; padding: 15px; border-radius: 8px;">
+                            <span style="color: ${severityColor}; font-weight: bold; text-transform: capitalize;">${result.description}</span>
+                        </div>
+                        ${result.isAboveThreshold ? `
+                            <div style="margin-top: 10px; color: #f59e0b;">⚠️ <span data-en="Above clinical threshold - consider professional consultation" data-mr="क्लिनिकल मर्यादेपेक्षा वरचा - व्यावसायिक सल्लमसलत विचारात घ्या">Above clinical threshold - consider professional consultation</span></div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="recommendations" style="margin-bottom: 25px;">
+                        <h4 style="color: #f3f4f6; margin-bottom: 15px;">💡 <span data-en="Recommendations:" data-mr="शिफारसी:">Recommendations:</span></h4>
+                        <ul style="color: #d1d5db; line-height: 1.6;">
+                            ${result.recommendations.map(rec => `<li>${rec}</li>`).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div class="disclaimer" style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); padding: 15px; border-radius: 8px; color: #06b6d4; font-size: 14px;">
+                        <p><strong><span data-en="Important:" data-mr="महत्वाचे:">Important:</span></strong> <span data-en="This screening is for informational purposes only and does not constitute a clinical diagnosis. Please discuss these results with a qualified healthcare provider." data-mr="ही तपासणी केवळ माहितीच्या हेतूंसाठी आहे आणि क्लिनिकल निदान नाही. कृपया या परिणामांवर पात्र आरोग्यसेवा प्रदात्यासोबत चर्चा करा.">This screening is for informational purposes only and does not constitute a clinical diagnosis. Please discuss these results with a qualified healthcare provider.</span></p>
+                    </div>
+                    
+                    <div class="actions" style="text-align: center; margin-top: 25px;">
+                        <button onclick="printResults('${resultsDivId}')" style="background: #6366f1; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; margin-right: 10px;">
+                            🖨️ <span data-en="Print Results" data-mr="परिणाम छापा">Print Results</span>
+                        </button>
+                        <button onclick="shareResults('${toolData.name}', ${result.totalScore}, '${result.level}')" style="background: #10b981; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer;">
+                            📤 <span data-en="Share Results" data-mr="परिणाम शेअर करा">Share Results</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+            
+            // Update multilingual content
+            if (currentLanguage === 'mr') {
+                switchLanguage('mr');
+            }
+        }
+        
+        // Get severity color
+        function getSeverityColor(level) {
+            const colors = {
+                'minimal': '#10b981',
+                'normal': '#10b981', 
+                'mild': '#f59e0b',
+                'moderate': '#f97316',
+                'moderately_severe': '#ef4444',
+                'severe': '#dc2626'
+            };
+            return colors[level] || '#6b7280';
+        }
+        
+        // Reset screening form
+        function resetScreening(toolKey) {
+            const form = document.getElementById(`${toolKey}Form`);
+            const results = document.getElementById(`${toolKey}Results`);
+            
+            if (form) {
+                form.reset();
+            }
+            if (results) {
+                results.style.display = 'none';
+            }
+        }
+        
+        // Print results
+        function printResults(resultsDivId) {
+            const resultsDiv = document.getElementById(resultsDivId);
+            if (!resultsDiv) return;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Mental Health Screening Results</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+                            .crisis-alert { background: #fee; border: 2px solid #f00; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+                            .score-bar { background: #eee; height: 20px; border-radius: 10px; overflow: hidden; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>AarogyaTech - Mental Health Screening Results</h1>
+                        <div style="color: #333;">${resultsDiv.innerHTML.replace(/style="[^"]*"/g, '')}</div>
+                        <hr>
+                        <p><small>Generated on ${new Date().toLocaleString()}</small></p>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        // Share results
+        function shareResults(toolName, score, level) {
+            const message = `I completed a ${toolName} screening on AarogyaTech. Results are confidential and for personal reference only.`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Mental Health Screening - AarogyaTech',
+                    text: message
+                }).catch(err => console.log('Error sharing:', err));
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(message).then(() => {
+                    alert('Results summary copied to clipboard!');
+                }).catch(err => {
+                    console.log('Failed to copy to clipboard:', err);
+                    alert('Sharing not supported on this device.');
+                });
+            }
+        }
+
+        // Voice functionality
+        let currentVoiceMode = 'text';
+        let voiceManager = null;
+        let isRecording = false;
+        let currentAudio = null;
+        
+        // Initialize VoiceInteractionManager
+        async function initializeVoiceManager() {
+            try {
+                // First check if voice services are available
+                const serviceStatus = await checkVoiceServiceAvailability();
+                
+                if (serviceStatus.voiceConversationAvailable) {
+                    voiceManager = new VoiceInteractionManager({
+                        apiBaseUrl: '/api',
+                        visualizerEnabled: true,
+                        animationsEnabled: true,
+                        autoPlayResponse: true,
+                        onTranscription: (text) => {
+                            console.log('Voice transcription:', text);
+                            addMessageToChat('user', text);
+                        },
+                        onResponse: (text) => {
+                            console.log('Voice response:', text);
+                            addMessageToChat('bot', text);
+                        },
+                        onError: (message, error) => {
+                            console.error('Voice error:', message, error);
+                            showVoiceError(message);
+                        }
+                    });
+                    console.log('Advanced voice manager initialized');
+                } else {
+                    console.log('Advanced voice features unavailable - using browser-based fallback');
+                    updateAdvancedVoiceStatus(serviceStatus);
+                }
+            } catch (error) {
+                console.error('Failed to initialize voice manager:', error);
+                showVoiceError('Advanced voice features are not available');
+            }
+        }
+        
+        // Check voice service availability
+        async function checkVoiceServiceAvailability() {
+            try {
+                const response = await fetch('/api/voice-conversation/status');
+                const data = await response.json();
+                return {
+                    voiceConversationAvailable: data.isAvailable,
+                    speechToTextAvailable: data.services?.speechToText?.available || false,
+                    textToSpeechAvailable: data.services?.textToSpeech?.available || false,
+                    conversationalAIAvailable: data.services?.conversationalAI?.available || false,
+                    details: data
+                };
+            } catch (error) {
+                console.error('Failed to check voice service status:', error);
+                return {
+                    voiceConversationAvailable: false,
+                    speechToTextAvailable: false,
+                    textToSpeechAvailable: false,
+                    conversationalAIAvailable: false,
+                    error: error.message
+                };
+            }
+        }
+        
+        // Update advanced voice area status
+        function updateAdvancedVoiceStatus(serviceStatus) {
+            const toggleBtn = document.getElementById('toggleVoiceArea');
+            if (toggleBtn) {
+                if (!serviceStatus.voiceConversationAvailable) {
+                    toggleBtn.innerHTML = `
+                        🔧 <span data-en="Advanced Voice Unavailable (Configuration Required)" 
+                               data-mr="प्रगत आवाज अनुपलब्ध (कॉन्फ़िगरेशन आवश्यक)">Advanced Voice Unavailable (Configuration Required)</span>
+                    `;
+                    toggleBtn.disabled = true;
+                    toggleBtn.title = 'Text-to-Speech API configuration required for advanced voice features';
+                    toggleBtn.style.opacity = '0.6';
+                    toggleBtn.style.cursor = 'not-allowed';
+                }
+            }
+        }
+
+        // Voice mode management
+        function setVoiceMode(mode) {
+            console.log('Setting voice mode to:', mode);
+            currentVoiceMode = mode;
+
+            // Update UI buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+
+            // Show/hide voice controls based on mode
+            const voiceBtn = document.getElementById('voiceBtn');
+            const voiceToTextBtn = document.getElementById('voiceToTextBtn');
+            const stopVoiceBtn = document.getElementById('stopVoiceBtn');
+            const voiceArea = document.getElementById('voiceInteractionArea');
+            const toggleBtn = document.getElementById('toggleVoiceArea');
+
+            // Hide all voice controls first
+            voiceBtn.style.display = 'none';
+            voiceToTextBtn.style.display = 'none';
+            stopVoiceBtn.style.display = 'none';
+
+            if (mode === 'voice-to-text') {
+                voiceBtn.style.display = 'flex';
+                voiceBtn.onclick = startVoiceRecording;
+                voiceBtn.title = 'Click to record voice message';
+                // Hide advanced voice area for simple voice-to-text
+                if (voiceArea) voiceArea.style.display = 'none';
+            } else if (mode === 'voice-to-voice') {
+                // Show the toggle button for advanced voice features
+                if (toggleBtn) {
+                    toggleBtn.style.display = 'block';
+                }
+                voiceBtn.style.display = 'flex';
+                voiceBtn.onclick = startVoiceRecording;
+                voiceBtn.title = 'Click to start voice conversation or use Advanced Voice Mode below';
+            } else {
+                // Text mode - hide advanced voice area
+                if (voiceArea) voiceArea.style.display = 'none';
+                if (toggleBtn) toggleBtn.style.display = 'none';
+            }
+
+            updateModeInstructions(mode);
+        }
+
+        function updateModeInstructions(mode) {
+            const instructions = {
+                'text': 'Type your message and click Send',
+                'voice-to-text': 'Click the microphone to record your voice, or type your message',
+                'voice-to-voice': 'Click the microphone for voice conversation - I\'ll respond with voice too'
+            };
+
+            // You can add instruction display here if needed
+            console.log('Mode instruction:', instructions[mode]);
+        }
+
+        // Voice recording functions
+        async function startVoiceRecording() {
+            if (isRecording) return;
+
+            try {
+                console.log('Starting voice recording...');
+                
+                if (voiceManager) {
+                    // Use the advanced VoiceInteractionManager
+                    await voiceManager.startRecording();
+                    isRecording = true;
+                } else {
+                    // Fallback to Web Speech API for direct speech recognition (more reliable)
+                    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                        await startWebSpeechRecognition();
+                        return;
+                    }
+                    
+                    throw new Error('No voice recognition available');
+                }
+
+                // Update UI
+                showVoiceIndicator();
+                document.getElementById('voiceBtn').style.display = 'none';
+                document.getElementById('stopVoiceBtn').style.display = 'flex';
+
+            } catch (error) {
+                console.error('Failed to start recording:', error);
+                showVoiceError('Microphone access denied. Please allow microphone access to use voice features.');
+            }
+        }
+
+        // Web Speech Recognition (direct approach)
+        async function startWebSpeechRecognition() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            
+            if (!SpeechRecognition) {
+                throw new Error('Speech recognition not supported');
+            }
+
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = currentLanguage === 'mr' ? 'mr-IN' : 'en-US';
+
+            // Update UI
+            isRecording = true;
+            showVoiceIndicator();
+            document.getElementById('voiceBtn').style.display = 'none';
+            document.getElementById('stopVoiceBtn').style.display = 'flex';
+
+            recognition.onresult = async (event) => {
+                const transcript = event.results[0][0].transcript;
+                console.log('Speech recognition result:', transcript);
+                
+                // Process the transcription
+                if (transcript && transcript.trim()) {
+                    // Add user message to chat
+                    addMessageToChat('user', transcript);
+
+                    // Show processing indicator
+                    showProcessingIndicator();
+
+                    try {
+                        // Get AI response
+                        const response = await getAIResponse(transcript);
+
+                        if (response) {
+                            // Add bot response to chat
+                            addMessageToChat('bot', response);
+
+                            // If voice-to-voice mode, also play the response
+                            if (currentVoiceMode === 'voice-to-voice') {
+                                await textToSpeech(response);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error getting AI response:', error);
+                        addMessageToChat('bot', "I'm sorry, I'm having trouble responding right now. Please try again.");
+                    } finally {
+                        hideProcessingIndicator();
+                    }
+                }
+
+                // Reset UI
+                isRecording = false;
+                hideVoiceIndicator();
+                document.getElementById('voiceBtn').style.display = 'flex';
+                document.getElementById('stopVoiceBtn').style.display = 'none';
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                showVoiceError(`Speech recognition error: ${event.error}`);
+                
+                // Reset UI
+                isRecording = false;
+                hideVoiceIndicator();
+                document.getElementById('voiceBtn').style.display = 'flex';
+                document.getElementById('stopVoiceBtn').style.display = 'none';
+            };
+
+            recognition.onend = () => {
+                console.log('Speech recognition ended');
+                
+                // Reset UI if not already reset
+                if (isRecording) {
+                    isRecording = false;
+                    hideVoiceIndicator();
+                    document.getElementById('voiceBtn').style.display = 'flex';
+                    document.getElementById('stopVoiceBtn').style.display = 'none';
+                }
+            };
+
+            recognition.start();
+        }
+
+        function stopVoiceRecording() {
+            if (!isRecording) return;
+
+            console.log('Stopping voice recording...');
+            
+            if (voiceManager) {
+                // Use the advanced VoiceInteractionManager
+                voiceManager.stopRecording();
+            } else {
+                // Stop Web Speech Recognition if active
+                if ('speechSynthesis' in window && speechSynthesis.speaking) {
+                    speechSynthesis.cancel();
+                }
+            }
+            
+            isRecording = false;
+
+            // Update UI
+            hideVoiceIndicator();
+            document.getElementById('voiceBtn').style.display = 'flex';
+            document.getElementById('stopVoiceBtn').style.display = 'none';
+        }
+
+        function startVoiceToText() {
+            if (currentVoiceMode === 'voice-to-text' || currentVoiceMode === 'voice-to-voice') {
+                startVoiceRecording();
+            }
+        }
+
+        async function processRecording() {
+            if (audioChunks.length === 0) return;
+
+            console.log('Processing voice recording...');
+            showProcessingIndicator();
+
+            try {
+                // Create audio blob
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+
+                // Convert speech to text
+                const transcription = await speechToText(audioBlob);
+
+                if (transcription) {
+                    console.log('Transcription:', transcription);
+
+                    // Add user message to chat
+                    addMessageToChat('user', transcription);
+
+                    // Get AI response
+                    const response = await getAIResponse(transcription);
+
+                    if (response) {
+                        // Add bot response to chat
+                        addMessageToChat('bot', response);
+
+                        // If voice-to-voice mode, also play the response
+                        if (currentVoiceMode === 'voice-to-voice') {
+                            await textToSpeech(response);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error processing recording:', error);
+                showVoiceError('Error processing voice recording. Please try again.');
+            } finally {
+                hideProcessingIndicator();
+            }
+        }
+
+        // API functions
+        async function speechToText(audioBlob) {
+            try {
+                // First try Web Speech API (browser-based, more reliable)
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    return await speechToTextWebAPI();
+                }
+                
+                // Fallback to server-based speech-to-text
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.webm');
+
+                const response = await fetch('/api/speech-to-text/transcribe', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.transcription;
+            } catch (error) {
+                console.error('Speech-to-text error:', error);
+                showVoiceError('Failed to convert speech to text. Please try again.');
+                return null;
+            }
+        }
+
+        // Web Speech API implementation (browser-based)
+        function speechToTextWebAPI() {
+            return new Promise((resolve, reject) => {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                
+                if (!SpeechRecognition) {
+                    reject(new Error('Speech recognition not supported'));
+                    return;
+                }
+
+                const recognition = new SpeechRecognition();
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = currentLanguage === 'mr' ? 'mr-IN' : 'en-US';
+
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    console.log('Speech recognition result:', transcript);
+                    resolve(transcript);
+                };
+
+                recognition.onerror = (event) => {
+                    console.error('Speech recognition error:', event.error);
+                    reject(new Error(`Speech recognition error: ${event.error}`));
+                };
+
+                recognition.onend = () => {
+                    console.log('Speech recognition ended');
+                };
+
+                recognition.start();
+            });
+        }
+
+        async function getAIResponse(message) {
+            try {
+                const response = await fetch('/api/conversational-ai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: message,
+                        language: currentLanguage
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.message || data.response;
+            } catch (error) {
+                console.error('AI response error:', error);
+                // Fallback responses
+                const fallbackResponses = [
+                    "Thank you for sharing that with me. How are you feeling right now?",
+                    "I understand. It's completely normal to feel this way sometimes.",
+                    "That sounds challenging. What would help you feel better in this moment?",
+                    "I'm here to listen. Can you tell me more about what's on your mind?",
+                    "It's okay to feel overwhelmed sometimes. Let's take this one step at a time."
+                ];
+                return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+            }
+        }
+
+        async function textToSpeech(text) {
+            try {
+                showPlaybackIndicator();
+
+                // Use Web Speech API (browser-based, more reliable)
+                if ('speechSynthesis' in window) {
+                    await textToSpeechWebAPI(text);
+                    return;
+                }
+
+                // Fallback to server-based text-to-speech
+                const response = await fetch('/api/text-to-speech/synthesize', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: text,
+                        language: currentLanguage
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                // Play audio
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
+
+                currentAudio = new Audio(audioUrl);
+                currentAudio.onended = () => {
+                    hidePlaybackIndicator();
+                    URL.revokeObjectURL(audioUrl);
+                };
+
+                await currentAudio.play();
+
+            } catch (error) {
+                console.error('Text-to-speech error:', error);
+                hidePlaybackIndicator();
+                showVoiceError('Failed to play audio response.');
+            }
+        }
+
+        // Web Speech API implementation for text-to-speech
+        function textToSpeechWebAPI(text) {
+            return new Promise((resolve, reject) => {
+                if (!('speechSynthesis' in window)) {
+                    reject(new Error('Speech synthesis not supported'));
+                    return;
+                }
+
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set language based on current language
+                utterance.lang = currentLanguage === 'mr' ? 'mr-IN' : 'en-US';
+                utterance.rate = 0.9; // Slightly slower for better comprehension
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+
+                utterance.onend = () => {
+                    console.log('Speech synthesis completed');
+                    hidePlaybackIndicator();
+                    resolve();
+                };
+
+                utterance.onerror = (event) => {
+                    console.error('Speech synthesis error:', event.error);
+                    hidePlaybackIndicator();
+                    reject(new Error(`Speech synthesis error: ${event.error}`));
+                };
+
+                // Start speaking
+                speechSynthesis.speak(utterance);
+            });
+        }
+
+        // UI indicator functions
+        function showVoiceIndicator() {
+            document.getElementById('voiceIndicator').style.display = 'flex';
+        }
+
+        function hideVoiceIndicator() {
+            document.getElementById('voiceIndicator').style.display = 'none';
+        }
+
+        function showProcessingIndicator() {
+            document.getElementById('processingIndicator').style.display = 'block';
+        }
+
+        function hideProcessingIndicator() {
+            document.getElementById('processingIndicator').style.display = 'none';
+        }
+
+        function showPlaybackIndicator() {
+            document.getElementById('playbackIndicator').style.display = 'flex';
+        }
+
+        function hidePlaybackIndicator() {
+            document.getElementById('playbackIndicator').style.display = 'none';
+        }
+
+        function showVoiceError(message) {
+            const errorDiv = document.getElementById('voiceError');
+            if (errorDiv) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
+                setTimeout(() => {
+                    errorDiv.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Advanced voice interaction area toggle
+        async function toggleAdvancedVoiceArea() {
+            const voiceArea = document.getElementById('voiceInteractionArea');
+            const toggleBtn = document.getElementById('toggleVoiceArea');
+            
+            if (voiceArea.style.display === 'none') {
+                voiceArea.style.display = 'block';
+                toggleBtn.querySelector('span').textContent = 'Hide Advanced Voice Mode';
+                
+                // Initialize the voice manager UI if not already done
+                if (voiceManager && !voiceManager.isInitialized) {
+                    try {
+                        await voiceManager.init('voiceInteractionContainer');
+                    } catch (error) {
+                        console.error('Failed to initialize voice UI:', error);
+                        showVoiceError('Failed to initialize advanced voice features');
+                    }
+                }
+            } else {
+                voiceArea.style.display = 'none';
+                toggleBtn.querySelector('span').textContent = 'Switch to Advanced Voice Mode';
+            }
+        }
+        
+        // Initialize voice mode
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set initial voice mode
+            setVoiceMode('text');
+
+            // Hide all indicators initially
+            hideVoiceIndicator();
+            hideProcessingIndicator();
+            hidePlaybackIndicator();
+        });
+
+        // AudioPlaybackManager object for compatibility with HTML onclick handlers
+        const AudioPlaybackManager = {
+            pause: function () {
+                console.log('Audio pause requested');
+                if (currentAudio) {
+                    currentAudio.pause();
+                }
+            },
+
+            resume: function () {
+                console.log('Audio resume requested');
+                if (currentAudio) {
+                    currentAudio.play().catch(e => console.log('Resume failed:', e));
+                }
+            },
+
+            stop: function () {
+                console.log('Audio stop requested');
+                if (currentAudio) {
+                    currentAudio.pause();
+                    currentAudio.currentTime = 0;
+                }
+                hidePlaybackIndicator();
+            },
+
+            skipToNext: function () {
+                console.log('Audio skip requested');
+                this.stop();
+            },
+
+            setVolume: function (volume) {
+                console.log('Volume set to:', volume);
+                if (currentAudio) {
+                    currentAudio.volume = volume;
+                }
+            },
+
+            setPlaybackRate: function (rate) {
+                console.log('Playback rate set to:', rate);
+                if (currentAudio) {
+                    currentAudio.playbackRate = rate;
+                }
+                // Update speed display
+                const speedDisplay = document.getElementById('speedDisplay');
+                if (speedDisplay) {
+                    speedDisplay.textContent = rate.toFixed(1) + 'x';
+                }
+            }
+        };
+
+        // ChatInterface object for compatibility with HTML onclick handlers
+        const ChatInterface = {
+            clearHistory: function () {
+                console.log('Clearing chat history');
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    // Keep the initial bot message
+                    const initialMessage = chatMessages.querySelector('.message.bot');
+                    chatMessages.innerHTML = '';
+                    if (initialMessage) {
+                        chatMessages.appendChild(initialMessage);
+                    }
+                }
+            },
+
+            exportHistory: function () {
+                console.log('Exporting chat history');
+                const chatMessages = document.getElementById('chatMessages');
+                if (chatMessages) {
+                    const messages = [];
+                    const messageElements = chatMessages.querySelectorAll('.message');
+
+                    messageElements.forEach(msg => {
+                        const sender = msg.classList.contains('bot') ? 'AI Assistant' : 'User';
+                        const content = msg.querySelector('.message-content').textContent;
+                        messages.push(`${sender}: ${content}`);
+                    });
+
+                    const chatHistory = messages.join('\n\n');
+                    const blob = new Blob([chatHistory], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `mindcare-chat-${new Date().toISOString().split('T')[0]}.txt`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }
+            },
+
+            sendMessage: sendMessage,
+            addMessage: addMessageToChat
+        };
+
+        console.log('MindCare app with voice features loaded successfully');
+    </script>
+    <script src="js/voiceInteraction.js"></script>
+</body>
+
+</html>

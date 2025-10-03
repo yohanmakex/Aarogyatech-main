@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" type="image/svg+xml">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - AI Voice Assistant for Student Mental Health</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn active" onclick="switchLanguage('en')" id="langEn">EN</button>
+        <button class="language-btn" onclick="switchLanguage('mr')" id="langMr">मराठी</button>
+    </div>
+
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🧠 <span data-en="MindCare" data-mr="मानसिक काळजी">MindCare</span></h1>
+                <p><span data-en="Student Mental Health Support" data-mr="विद्यार्थी मानसिक आरोग्य सेवा">Student Mental Health Support</span></p>
+            </div>
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="userEmail"><span data-en="Email" data-mr="ईमेल">Email</span></label>
+                    <input type="email" id="userEmail" data-placeholder-en="Enter your email" data-placeholder-mr="तुमचा ईमेल टाका" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword"><span data-en="Password" data-mr="पासवर्ड">Password</span></label>
+                    <input type="password" id="userPassword" data-placeholder-en="Enter your password" data-placeholder-mr="तुमचा पासवर्ड टाका" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn"><span data-en="Enter MindCare" data-mr="मानसिक काळजीमध्ये प्रवेश करा">Enter MindCare</span></button>
+            </form>
+            <div class="register-link">
+                <p><span data-en="Demo login: Use any email and password to access" data-mr="डेमो लॉगिन: प्रवेशासाठी कोणताही ईमेल आणि पासवर्ड वापरा">Demo login: Use any email and password to access</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="container" style="display: none;">
+        <!-- User Info Bar -->
+        <div class="user-info-bar">
+            <div class="user-details">
+                <span><span data-en="Welcome," data-mr="स्वागत,">Welcome,</span> <strong id="currentUserName">Student</strong></span>
+                <span style="color: #9ca3af;" id="currentUserEmail">student@university.edu</span>
+            </div>
+            <button class="logout-btn" onclick="logout()"><span data-en="Logout" data-mr="बाहेर पडा">Logout</span></button>
+        </div>
+
+        <div class="header">
+            <h1>🧠 <span data-en="MindCare" data-mr="मानसिक काळजी">MindCare</span></h1>
+            <p><span data-en="Your Digital Mental Health Companion" data-mr="तुमचा डिजिटल मानसिक आरोग्य साथीदार">Your Digital Mental Health Companion</span></p>
+        </div>
+
+        <div class="emergency-banner">
+            🚨 <span data-en="Emergency? Call National Suicide Prevention Lifeline:" data-mr="आपत्कालीन? राष्ट्रीय आत्महत्या प्रतिबंध हेल्पलाइनवर कॉल करा:">Emergency? Call National Suicide Prevention Lifeline:</span> <a href="tel:988">988</a> | <span data-en="Campus Crisis Line:" data-mr="कॅम्पस संकट हेल्पलाइन:">Campus Crisis Line:</span> <a href="tel:+1234567890">+1-234-567-890</a>
+        </div>
+
+        <div class="main-nav">
+            <button class="nav-btn active" onclick="showSection('chat')"><span data-en="AI Voice Support" data-mr="AI आवाज सहाय्य">AI Voice Support</span></button>
+            <button class="nav-btn" onclick="showSection('booking')"><span data-en="Book Counseling" data-mr="समुपदेशन बुक करा">Book Counseling</span></button>
+            <button class="nav-btn" onclick="showSection('resources')"><span data-en="Resources" data-mr="संसाधने">Resources</span></button>
+            <button class="nav-btn" onclick="showSection('peer-support')"><span data-en="Peer Support" data-mr="समवयस्क सहाय्य">Peer Support</span></button>
+        </div>
+
+        <!-- AI Chat Section -->
+        <div id="chat" class="content-area active">
+            <div class="chat-header">
+                <h2><span data-en="AI Voice Assistant - Mental Health Support" data-mr="AI आवाज सहायक - मानसिक आरोग्य सहाय्य">AI Voice Assistant - Mental Health Support</span></h2>
+            </div>
+            <p style="margin-bottom: 20px; color: #9ca3af;"><span data-en="Share what's on your mind using text. I'm here to listen and provide helpful coping strategies. Remember, I'm not a replacement for professional help." data-mr="आपल्या मनातील गोष्टी मजकूराद्वारे सांगा. मी येथे ऐकण्यासाठी आणि उपयुक्त सामना करण्याच्या धोरणे देण्यासाठी आहे. लक्षात ठेवा, मी व्यावसायिक मदतीचा पर्याय नाही.">Share what's on your mind using text. I'm here to listen and provide helpful coping strategies. Remember, I'm not a replacement for professional help.</span></p>
+            
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot">
+                        <div class="message-content">
+                            <span data-en="Hello! I'm here to support you. How are you feeling today? You can share anything that's bothering you, and I'll do my best to help." data-mr="नमस्कार! मी तुम्हाला सहाय्य करण्यासाठी येथे आहे. आज तुम्हाला कसे वाटत आहे? तुम्हाला त्रास देणारी कोणतीही गोष्ट सांगू शकता आणि मी मदत करण्याचा सर्वोत्तम प्रयत्न करेन.">Hello! I'm here to support you. How are you feeling today? You can share anything that's bothering you, and I'll do my best to help.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <div class="enhanced-chat-input">
+                        <input type="text" id="chatInput" data-placeholder-en="Type your message here..." data-placeholder-mr="तुमचा संदेश येथे टाइप करा..." placeholder="Type your message here..." onkeypress="handleEnter(event)">
+                        <button class="send-btn" onclick="sendMessage()">
+                            <span data-en="Send" data-mr="पाठवा">Send</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder sections -->
+        <div id="booking" class="content-area">
+            <h2>Book Counseling</h2>
+            <p>Counseling booking functionality would be implemented here.</p>
+        </div>
+
+        <div id="resources" class="content-area">
+            <h2>Resources</h2>
+            <p>Mental health resources would be displayed here.</p>
+        </div>
+
+        <div id="peer-support" class="content-area">
+            <h2>Peer Support</h2>
+            <p>Peer support features would be implemented here.</p>
+        </div>
+    </div>
+
+    <!-- Load simple app instead of complex one -->
+    <script src="simple-app.js"></script>
+</body>
+</html>

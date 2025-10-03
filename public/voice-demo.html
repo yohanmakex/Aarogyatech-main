@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare AI - Voice Conversation Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            color: white;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 20px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .demo-container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .feature-description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .voice-interaction-wrapper {
+            margin: 40px 0;
+        }
+
+        .controls-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .control-group {
+            margin-bottom: 20px;
+        }
+
+        .control-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .control-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .control-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            margin-bottom: 5px;
+            opacity: 0.8;
+        }
+
+        .log-entry.error {
+            color: #ff6b6b;
+        }
+
+        .log-entry.success {
+            color: #2ecc71;
+        }
+
+        .log-entry.info {
+            color: #3498db;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .api-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .api-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .api-endpoint {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .demo-container {
+                padding: 0 10px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🎤 MindCare AI Voice Assistant</h1>
+        <p class="subtitle">Interactive Voice-to-Voice Mental Health Support</p>
+    </header>
+
+    <main>
+        <div class="demo-container">
+            <!-- Features Overview -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">🗣️</span>
+                    <div class="feature-title">Voice-to-Voice</div>
+                    <div class="feature-description">
+                        Complete voice conversations with AI - speak naturally and get spoken responses
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🧠</span>
+                    <div class="feature-title">Mental Health Focus</div>
+                    <div class="feature-description">
+                        Specialized in mental health support with crisis detection and screening recommendations
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <div class="feature-title">Real-time Analysis</div>
+                    <div class="feature-description">
+                        Live audio visualization and intelligent screening tool recommendations
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🔒</span>
+                    <div class="feature-title">Privacy First</div>
+                    <div class="feature-description">
+                        End-to-end privacy with automatic data anonymization and configurable retention
+                    </div>
+                </div>
+            </div>
+
+            <!-- Voice Interaction Interface -->
+            <div class="voice-interaction-wrapper">
+                <div id="voiceInterface"></div>
+            </div>
+
+            <!-- Controls Section -->
+            <div class="controls-section">
+                <h3 style="margin-bottom: 20px;">🎛️ Demo Controls</h3>
+                
+                <div class="control-group">
+                    <label class="control-label">Test Text-to-Speech:</label>
+                    <input type="text" id="testText" class="control-input" 
+                           placeholder="Enter text to synthesize..." 
+                           value="Hello! I'm your AI mental health assistant. How are you feeling today?">
+                </div>
+
+                <div class="control-group">
+                    <button id="testTtsButton" class="control-button">🔊 Test TTS</button>
+                    <button id="checkStatusButton" class="control-button">📊 Check Status</button>
+                    <button id="clearLogsButton" class="control-button">🗑️ Clear Logs</button>
+                </div>
+
+                <div class="status-panel" id="statusPanel">
+                    <div class="log-entry info">🚀 Voice interaction demo loaded. Click buttons above to test functionality.</div>
+                </div>
+            </div>
+
+            <!-- API Information -->
+            <div class="api-info">
+                <h3>🔌 API Endpoints</h3>
+                <div class="api-endpoint">GET /api/voice-conversation/status - Service status</div>
+                <div class="api-endpoint">POST /api/voice-conversation/start - Start session</div>
+                <div class="api-endpoint">POST /api/voice-conversation/process - Process voice input</div>
+                <div class="api-endpoint">GET /api/voice-conversation/voices/profiles - Voice profiles</div>
+                <div class="api-endpoint">GET /api/screening/tools - Available screening tools</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 MindCare AI - Advanced Voice-Enabled Mental Health Support</p>
+        <p style="margin-top: 5px; font-size: 0.8rem;">
+            Powered by OpenAI Whisper, GPT, and advanced voice synthesis technology
+        </p>
+    </footer>
+
+    <!-- Load the voice interaction library -->
+    <script src="/js/voiceInteraction.js"></script>
+    
+    <script>
+        // Demo application logic
+        let voiceManager = null;
+        let statusPanel = null;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            statusPanel = document.getElementById('statusPanel');
+            
+            log('🔄 Initializing voice interaction system...', 'info');
+
+            try {
+                // Initialize voice interaction manager
+                voiceManager = new VoiceInteractionManager({
+                    apiBaseUrl: '/api',
+                    voiceProfile: 'supportive',
+                    visualizerEnabled: true,
+                    autoPlayResponse: true,
+                    onRecordingStart: () => log('🎤 Recording started', 'info'),
+                    onRecordingStop: () => log('⏹️ Recording stopped', 'info'),
+                    onProcessingStart: () => log('🔄 Processing audio...', 'info'),
+                    onProcessingComplete: () => log('✅ Processing complete', 'success'),
+                    onTranscription: (text) => log(`📝 Transcription: "${text}"`, 'info'),
+                    onResponse: (text) => log(`🤖 AI Response: "${text.substring(0, 100)}..."`, 'info'),
+                    onError: (error) => log(`❌ Error: ${error}`, 'error')
+                });
+
+                await voiceManager.init('voiceInterface');
+                log('✅ Voice interaction system ready!', 'success');
+                
+                // Enable controls
+                enableControls();
+
+            } catch (error) {
+                log(`❌ Failed to initialize: ${error.message}`, 'error');
+                showFallbackMessage();
+            }
+        });
+
+        // Enable demo controls
+        function enableControls() {
+            // Test TTS button
+            document.getElementById('testTtsButton').addEventListener('click', async () => {
+                const text = document.getElementById('testText').value;
+                if (!text.trim()) {
+                    log('❌ Please enter text to test TTS', 'error');
+                    return;
+                }
+
+                try {
+                    log('🔄 Testing text-to-speech...', 'info');
+                    const button = document.getElementById('testTtsButton');
+                    button.disabled = true;
+                    button.innerHTML = '<span class="loading"></span> Testing...';
+
+                    const response = await fetch('/api/voice-conversation/test-synthesis', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            text: text,
+                            voiceProfile: 'supportive'
+                        })
+                    });
+
+                    if (response.ok) {
+                        const audioBlob = await response.blob();
+                        const audio = new Audio(URL.createObjectURL(audioBlob));
+                        await audio.play();
+                        log('✅ TTS test successful', 'success');
+                    } else {
+                        const error = await response.json();
+                        log(`❌ TTS test failed: ${error.message}`, 'error');
+                    }
+                } catch (error) {
+                    log(`❌ TTS test error: ${error.message}`, 'error');
+                } finally {
+                    const button = document.getElementById('testTtsButton');
+                    button.disabled = false;
+                    button.innerHTML = '🔊 Test TTS';
+                }
+            });
+
+            // Check status button
+            document.getElementById('checkStatusButton').addEventListener('click', async () => {
+                try {
+                    log('🔄 Checking service status...', 'info');
+                    const response = await fetch('/api/voice-conversation/status');
+                    const status = await response.json();
+                    
+                    log(`📊 Service Status: ${status.isAvailable ? 'Available' : 'Unavailable'}`, status.isAvailable ? 'success' : 'error');
+                    log(`🔧 Active APIs: STT=${status.services.speechToText.activeApi || 'none'}, TTS=${status.services.textToSpeech.activeApi || 'none'}`, 'info');
+                    log(`💬 Active Conversations: ${status.activeConversations}`, 'info');
+                } catch (error) {
+                    log(`❌ Status check failed: ${error.message}`, 'error');
+                }
+            });
+
+            // Clear logs button
+            document.getElementById('clearLogsButton').addEventListener('click', () => {
+                statusPanel.innerHTML = '<div class="log-entry info">🧹 Logs cleared</div>';
+            });
+        }
+
+        // Show fallback message if voice features aren't available
+        function showFallbackMessage() {
+            const voiceInterface = document.getElementById('voiceInterface');
+            voiceInterface.innerHTML = `
+                <div style="text-align: center; padding: 40px; background: rgba(255,255,255,0.1); border-radius: 15px;">
+                    <h3 style="margin-bottom: 20px;">🚧 Voice Features Unavailable</h3>
+                    <p style="margin-bottom: 15px;">Voice interaction requires:</p>
+                    <ul style="text-align: left; display: inline-block; margin-bottom: 20px;">
+                        <li>HTTPS connection (or localhost)</li>
+                        <li>Microphone permission</li>
+                        <li>API keys configured (OpenAI, Groq, etc.)</li>
+                    </ul>
+                    <p>Please check the server logs and ensure API keys are properly configured.</p>
+                </div>
+            `;
+        }
+
+        // Log function for demo
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            statusPanel.appendChild(logEntry);
+            statusPanel.scrollTop = statusPanel.scrollHeight;
+        }
+
+        // Handle browser compatibility warnings
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            log('⚠️ Browser does not support audio recording', 'error');
+        }
+
+        if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
+            log('⚠️ HTTPS required for microphone access in production', 'error');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+[
+  {
+    "id": "5a6af6c6-9335-4ad4-9c17-7c9c21a8ae79",
+    "studentId": null,
+    "userId": null,
+    "preferredDate": "2025-09-30",
+    "preferredTime": "10:00",
+    "sessionType": "individual",
+    "concerns": "depression",
+    "contactMethod": "phone",
+    "contactInfo": "9890059629",
+    "status": "pending",
+    "requestedAt": "2025-09-27T18:39:54.002Z",
+    "ipAddress": "::1",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36",
+    "createdAt": "2025-09-27T18:39:54.007Z",
+    "updatedAt": "2025-09-27T18:39:54.007Z"
+  },
+  {
+    "id": "a6718bf2-0cd1-4f07-99bb-6b98911c8c2d",
+    "studentId": "TEST001",
+    "userId": null,
+    "preferredDate": "2025-10-04",
+    "preferredTime": "14:00",
+    "sessionType": "individual",
+    "concerns": "Test booking for API verification",
+    "contactMethod": "email",
+    "contactInfo": "test@student.edu",
+    "status": "pending",
+    "requestedAt": "2025-09-27T18:40:50.907Z",
+    "ipAddress": "::1",
+    "userAgent": "axios/1.12.2",
+    "createdAt": "2025-09-27T18:40:50.907Z",
+    "updatedAt": "2025-09-27T18:40:50.907Z"
+  }
+]

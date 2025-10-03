@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - Multi-Language AI Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #2d1b69 0%, #5b2c6f 100%);
+            color: #e5e7eb;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1f1937 0%, #2d1b4e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #c084fc;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section {
+            background: rgba(15, 23, 42, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+        
+        .demo-section h3 {
+            color: #a855f7;
+            margin-bottom: 15px;
+        }
+        
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .language-btn {
+            background: rgba(139, 92, 246, 0.2);
+            color: #f3f4f6;
+            border: 2px solid rgba(139, 92, 246, 0.4);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .language-btn.active {
+            background: rgba(139, 92, 246, 0.6);
+            border-color: rgba(139, 92, 246, 0.8);
+        }
+        
+        .feature-demo {
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        
+        .feature-title {
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+        
+        .example-text {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 5px 0;
+            border-left: 3px solid #8b5cf6;
+        }
+        
+        .marathi {
+            font-family: 'Noto Sans Devanagari', 'Shivaji01', 'Arial Unicode MS', sans-serif;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-active {
+            background: #10b981;
+        }
+        
+        .status-inactive {
+            background: #ef4444;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 MindCare - Multi-Language AI Support Demo</h1>
+        
+        <div class="demo-section">
+            <h3>Language Selection</h3>
+            <div class="language-selector">
+                <span>Select Language:</span>
+                <button class="language-btn active" onclick="switchDemoLanguage('en')">English</button>
+                <button class="language-btn" onclick="switchDemoLanguage('mr')">मराठी</button>
+            </div>
+            <p id="language-description">
+                <span data-en="Choose your preferred language for AI interactions. The system will automatically translate responses and adapt voice synthesis accordingly."
+                      data-mr="AI संवादासाठी तुमची पसंतीची भाषा निवडा. सिस्टम आपोआप प्रतिसाद भाषांतरित करेल आणि आवाज संश्लेषण त्यानुसार जुळवेल.">
+                Choose your preferred language for AI interactions. The system will automatically translate responses and adapt voice synthesis accordingly.
+                </span>
+            </p>
+        </div>
+        
+        <div class="demo-section">
+            <h3 data-en="Multi-Language Features" data-mr="बहुभाषिक वैशिष्ट्ये">Multi-Language Features</h3>
+            
+            <div class="feature-demo">
+                <div class="feature-title">
+                    <span class="status-indicator status-active"></span>
+                    <span data-en="1. Language Detection" data-mr="१. भाषा ओळख">1. Language Detection</span>
+                </div>
+                <p data-en="Automatically detects the language of user input (English/Marathi)" 
+                   data-mr="वापरकर्त्याच्या इनपुटची भाषा आपोआप ओळखते (इंग्रजी/मराठी)">
+                   Automatically detects the language of user input (English/Marathi)
+                </p>
+                <div class="example-text">
+                    <strong data-en="Example:" data-mr="उदाहरण:">Example:</strong><br>
+                    <span data-en="Input: 'I am feeling stressed' → Detected: English"
+                          data-mr="इनपुट: 'मला तणाव वाटत आहे' → ओळखले: मराठी">
+                    Input: "I am feeling stressed" → Detected: English
+                    </span>
+                </div>
+            </div>
+            
+            <div class="feature-demo">
+                <div class="feature-title">
+                    <span class="status-indicator status-active"></span>
+                    <span data-en="2. AI Response Translation" data-mr="२. AI प्रतिसाद भाषांतर">2. AI Response Translation</span>
+                </div>
+                <p data-en="AI responses are automatically translated to user's preferred language"
+                   data-mr="AI प्रतिसाद आपोआप वापरकर्त्याच्या पसंतीच्या भाषेत भाषांतरित केले जातात">
+                   AI responses are automatically translated to user's preferred language
+                </p>
+                <div class="example-text">
+                    <strong data-en="English Response:" data-mr="इंग्रजी प्रतिसाद:">English Response:</strong><br>
+                    <span data-en="'I understand you're feeling stressed. Try some deep breathing exercises.'"
+                          data-mr="'मला समजते की तुम्हाला तणाव वाटत आहे. काही खोल श्वासोच्छवासाचे व्यायाम करून पहा.'">
+                    "I understand you're feeling stressed. Try some deep breathing exercises."
+                    </span>
+                </div>
+            </div>
+            
+            <div class="feature-demo">
+                <div class="feature-title">
+                    <span class="status-indicator status-active"></span>
+                    <span data-en="3. Language-Aware Voice Synthesis" data-mr="३. भाषा-जागरूक आवाज संश्लेषण">3. Language-Aware Voice Synthesis</span>
+                </div>
+                <p data-en="Text-to-speech adapts pronunciation and speed for different languages"
+                   data-mr="मजकूर-ते-आवाज वेगवेगळ्या भाषांसाठी उच्चार आणि गती जुळवतो">
+                   Text-to-speech adapts pronunciation and speed for different languages
+                </p>
+                <div class="example-text">
+                    <strong data-en="Voice Parameters:" data-mr="आवाज पॅरामीटर्स:">Voice Parameters:</strong><br>
+                    <span data-en="English: Normal speed (1.0x) | Marathi: Slower speed (0.9x) for clarity"
+                          data-mr="इंग्रजी: सामान्य गती (१.०x) | मराठी: स्पष्टतेसाठी मंद गती (०.९x)">
+                    English: Normal speed (1.0x) | Marathi: Slower speed (0.9x) for clarity
+                    </span>
+                </div>
+            </div>
+            
+            <div class="feature-demo">
+                <div class="feature-title">
+                    <span class="status-indicator status-active"></span>
+                    <span data-en="4. Multilingual Speech Recognition" data-mr="४. बहुभाषिक भाषण ओळख">4. Multilingual Speech Recognition</span>
+                </div>
+                <p data-en="Speech-to-text supports both English and Marathi with automatic language detection"
+                   data-mr="भाषण-ते-मजकूर आपोआप भाषा ओळखीसह इंग्रजी आणि मराठी दोन्हीला समर्थन देते">
+                   Speech-to-text supports both English and Marathi with automatic language detection
+                </p>
+                <div class="example-text">
+                    <strong data-en="Supported:" data-mr="समर्थित:">Supported:</strong>
+                    <span data-en="Whisper model with multilingual capabilities"
+                          data-mr="बहुभाषिक क्षमतांसह व्हिस्पर मॉडेल">
+                    Whisper model with multilingual capabilities
+                    </span>
+                </div>
+            </div>
+            
+            <div class="feature-demo">
+                <div class="feature-title">
+                    <span class="status-indicator status-active"></span>
+                    <span data-en="5. Localized Crisis Resources" data-mr="५. स्थानिकीकृत संकट संसाधने">5. Localized Crisis Resources</span>
+                </div>
+                <p data-en="Crisis detection and resources are provided in the user's language"
+                   data-mr="संकट शोध आणि संसाधने वापरकर्त्याच्या भाषेत प्रदान केली जातात">
+                   Crisis detection and resources are provided in the user's language
+                </p>
+                <div class="example-text">
+                    <strong data-en="Crisis Resources:" data-mr="संकट संसाधने:">Crisis Resources:</strong><br>
+                    <span data-en="National Suicide Prevention Lifeline: 988"
+                          data-mr="राष्ट्रीय आत्महत्या प्रतिबंध हेल्पलाइन: ९८८">
+                    National Suicide Prevention Lifeline: 988
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h3 data-en="Technical Implementation" data-mr="तांत्रिक अंमलबजावणी">Technical Implementation</h3>
+            <ul>
+                <li data-en="Language Service: Manages language detection, translation, and model selection"
+                    data-mr="भाषा सेवा: भाषा शोध, भाषांतर आणि मॉडेल निवड व्यवस्थापित करते">
+                    Language Service: Manages language detection, translation, and model selection
+                </li>
+                <li data-en="Enhanced AI Services: Updated to support language parameters"
+                    data-mr="वर्धित AI सेवा: भाषा पॅरामीटर्सला समर्थन देण्यासाठी अद्यतनित">
+                    Enhanced AI Services: Updated to support language parameters
+                </li>
+                <li data-en="Frontend Integration: Language selector and automatic language switching"
+                    data-mr="फ्रंटएंड एकीकरण: भाषा निवडकर्ता आणि स्वयंचलित भाषा स्विचिंग">
+                    Frontend Integration: Language selector and automatic language switching
+                </li>
+                <li data-en="API Enhancement: All endpoints now accept language parameters"
+                    data-mr="API सुधारणा: सर्व एंडपॉइंट्स आता भाषा पॅरामीटर्स स्वीकारतात">
+                    API Enhancement: All endpoints now accept language parameters
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentDemoLanguage = 'en';
+        
+        function switchDemoLanguage(lang) {
+            currentDemoLanguage = lang;
+            
+            // Update language buttons
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update all text elements
+            document.querySelectorAll('[data-en]').forEach(element => {
+                const text = element.getAttribute(`data-${lang}`);
+                if (text) {
+                    element.textContent = text;
+                }
+            });
+            
+            // Add/remove Marathi font class
+            if (lang === 'mr') {
+                document.body.classList.add('marathi');
+            } else {
+                document.body.classList.remove('marathi');
+            }
+            
+            // Show notification
+            showNotification(lang);
+        }
+        
+        function showNotification(lang) {
+            const messages = {
+                'en': 'Demo language switched to English',
+                'mr': 'डेमो भाषा मराठीत बदलली'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = messages[lang];
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

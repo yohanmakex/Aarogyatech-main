@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧠</text></svg>" type="image/svg+xml">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - Debug Version</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Debug styles */
+        .debug-panel {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 10000;
+            max-width: 300px;
+        }
+        .debug-status {
+            margin: 2px 0;
+        }
+        .debug-status.success { color: #4ade80; }
+        .debug-status.error { color: #f87171; }
+        .debug-status.warning { color: #fbbf24; }
+    </style>
+</head>
+<body>
+    <!-- Debug Panel -->
+    <div class="debug-panel">
+        <div class="debug-status" id="cssStatus">CSS: Loading...</div>
+        <div class="debug-status" id="jsStatus">JS: Loading...</div>
+        <div class="debug-status" id="domStatus">DOM: Loading...</div>
+        <div class="debug-status" id="loginStatus">Login: Not tested</div>
+        <button onclick="testLogin()" style="margin-top: 5px; padding: 5px;">Test Login</button>
+    </div>
+
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <button class="language-btn active" onclick="switchLanguage('en')" id="langEn">EN</button>
+        <button class="language-btn" onclick="switchLanguage('mr')" id="langMr">मराठी</button>
+    </div>
+
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🧠 <span data-en="MindCare" data-mr="मानसिक काळजी">MindCare</span></h1>
+                <p><span data-en="Student Mental Health Support" data-mr="विद्यार्थी मानसिक आरोग्य सेवा">Student Mental Health Support</span></p>
+            </div>
+            <form class="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="userEmail"><span data-en="Email" data-mr="ईमेल">Email</span></label>
+                    <input type="email" id="userEmail" data-placeholder-en="Enter your email" data-placeholder-mr="तुमचा ईमेल टाका" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword"><span data-en="Password" data-mr="पासवर्ड">Password</span></label>
+                    <input type="password" id="userPassword" data-placeholder-en="Enter your password" data-placeholder-mr="तुमचा पासवर्ड टाका" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn"><span data-en="Enter MindCare" data-mr="मानसिक काळजीमध्ये प्रवेश करा">Enter MindCare</span></button>
+            </form>
+            <div class="register-link">
+                <p><span data-en="Demo login: Use any email and password to access" data-mr="डेमो लॉगिन: प्रवेशासाठी कोणताही ईमेल आणि पासवर्ड वापरा">Demo login: Use any email and password to access</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="container" style="display: none;">
+        <!-- User Info Bar -->
+        <div class="user-info-bar">
+            <div class="user-details">
+                <span><span data-en="Welcome," data-mr="स्वागत,">Welcome,</span> <strong id="currentUserName">Student</strong></span>
+                <span style="color: #9ca3af;" id="currentUserEmail">student@university.edu</span>
+            </div>
+            <button class="logout-btn" onclick="logout()"><span data-en="Logout" data-mr="बाहेर पडा">Logout</span></button>
+        </div>
+
+        <div class="header">
+            <h1>🧠 <span data-en="MindCare" data-mr="मानसिक काळजी">MindCare</span></h1>
+            <p><span data-en="Your Digital Mental Health Companion" data-mr="तुमचा डिजिटल मानसिक आरोग्य साथीदार">Your Digital Mental Health Companion</span></p>
+        </div>
+
+        <div class="success-message" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.3); padding: 20px; border-radius: 10px; text-align: center; margin: 20px 0;">
+            <h2>🎉 Login Successful!</h2>
+            <p>You have successfully logged into MindCare. The main application would load here.</p>
+        </div>
+    </div>
+
+    <script>
+        // Debug logging
+        function updateDebugStatus(id, message, type = 'success') {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = message;
+                element.className = `debug-status ${type}`;
+            }
+        }
+
+        // Check if CSS loaded
+        function checkCSS() {
+            const testElement = document.createElement('div');
+            testElement.className = 'login-overlay';
+            document.body.appendChild(testElement);
+            
+            const styles = window.getComputedStyle(testElement);
+            const hasCSS = styles.position === 'fixed';
+            
+            document.body.removeChild(testElement);
+            
+            if (hasCSS) {
+                updateDebugStatus('cssStatus', 'CSS: ✓ Loaded', 'success');
+            } else {
+                updateDebugStatus('cssStatus', 'CSS: ✗ Failed', 'error');
+            }
+        }
+
+        // Simple login function (fallback)
+        function handleLogin(event) {
+            console.log('handleLogin called');
+            event.preventDefault();
+            
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            
+            if (email && password) {
+                // Update user info
+                document.getElementById('currentUserName').textContent = email.split('@')[0];
+                document.getElementById('currentUserEmail').textContent = email;
+                
+                // Hide login overlay and show main app
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'block';
+                
+                updateDebugStatus('loginStatus', 'Login: ✓ Success', 'success');
+            } else {
+                updateDebugStatus('loginStatus', 'Login: ✗ Missing data', 'error');
+            }
+        }
+
+        function logout() {
+            // Show login overlay and hide main app
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            
+            // Clear form
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userPassword').value = '';
+            
+            updateDebugStatus('loginStatus', 'Login: Logged out', 'warning');
+        }
+
+        function testLogin() {
+            document.getElementById('userEmail').value = 'test@example.com';
+            document.getElementById('userPassword').value = 'password123';
+            
+            const event = new Event('submit');
+            handleLogin(event);
+        }
+
+        // Stub functions to prevent errors
+        function switchLanguage(lang) {
+            console.log('Language switched to:', lang);
+        }
+
+        // Initialize when DOM loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebugStatus('domStatus', 'DOM: ✓ Ready', 'success');
+            checkCSS();
+            updateDebugStatus('jsStatus', 'JS: ✓ Basic functions loaded', 'success');
+            
+            console.log('Debug version loaded successfully');
+        });
+
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+            updateDebugStatus('jsStatus', 'JS: ✗ Error - ' + e.message, 'error');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - Minimal Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🧠 MindCare</h1>
+                <p>Student Mental Health Support</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">Password</label>
+                    <input type="password" id="userPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn">Enter MindCare</button>
+            </form>
+            <div class="register-link">
+                <p>Demo login: Use any email and password to access</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="container" style="display: none;">
+        <div style="text-align: center; padding: 40px;">
+            <h1>🎉 SUCCESS!</h1>
+            <h2>Welcome to MindCare!</h2>
+            <p>User: <strong id="currentUserName">Student</strong></p>
+            <p>Email: <strong id="currentUserEmail">student@university.edu</strong></p>
+            <button onclick="logout()" style="padding: 10px 20px; background: #ef4444; color: white; border: none; border-radius: 5px; cursor: pointer; margin-top: 20px;">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        console.log('Minimal test page loaded');
+
+        // Simple login function
+        function handleLogin(event) {
+            console.log('Login function called');
+            event.preventDefault();
+            
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            
+            console.log('Email:', email);
+            console.log('Password length:', password.length);
+            
+            if (email && password) {
+                console.log('Credentials provided, proceeding with login');
+                
+                // Update user info
+                document.getElementById('currentUserName').textContent = email.split('@')[0];
+                document.getElementById('currentUserEmail').textContent = email;
+                
+                // Hide login and show main app
+                console.log('Hiding login overlay');
+                document.getElementById('loginOverlay').style.display = 'none';
+                
+                console.log('Showing main app');
+                document.getElementById('mainApp').style.display = 'block';
+                
+                console.log('Login completed successfully');
+            } else {
+                console.log('Missing email or password');
+                alert('Please enter both email and password');
+            }
+        }
+
+        function logout() {
+            console.log('Logout function called');
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userPassword').value = '';
+        }
+
+        // Set up event listener when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up login form');
+            
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+                console.log('Login form event listener added');
+            } else {
+                console.error('Login form not found!');
+            }
+        });
+
+        // Error handling
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript Error:', e.error);
+        });
+    </script>
+</body>
+</html>

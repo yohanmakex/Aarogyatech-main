@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Playback Mock Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .test-btn {
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .test-btn:hover {
+            background: #7c3aed;
+        }
+        .status {
+            background: #2d1b4e;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .playback-indicator {
+            display: none;
+            color: #10b981;
+            margin: 10px 0;
+            align-items: center;
+            gap: 10px;
+        }
+        .audio-controls {
+            display: none;
+            margin: 10px 0;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .audio-controls button {
+            background: #4c1d95;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #8b5cf6;
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+        .queue-indicator {
+            background: #4c1d95;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧠 MindCare Audio Playback Mock Test</h1>
+        
+        <div class="status" id="status">
+            Status: Ready to test
+        </div>
+        
+        <div>
+            <button class="test-btn" onclick="testBasicPlayback()">Test Basic Audio Playback</button>
+            <button class="test-btn" onclick="testQueueManagement()">Test Queue Management</button>
+            <button class="test-btn" onclick="testVoiceToVoice()">Test Voice-to-Voice Flow</button>
+            <button class="test-btn" onclick="testControls()">Test Playback Controls</button>
+            <button class="test-btn" onclick="testVolumeSpeed()">Test Volume & Speed</button>
+        </div>
+        
+        <div class="playback-indicator" id="playbackIndicator">
+            <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; animation: pulse 1.2s infinite;"></div>
+            <span>Playing audio...</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <div class="queue-indicator" id="queueIndicator">0 in queue</div>
+        
+        <div class="audio-controls" id="audioControls">
+            <button onclick="mockAudioManager.pause()">⏸️ Pause</button>
+            <button onclick="mockAudioManager.resume()">▶️ Resume</button>
+            <button onclick="mockAudioManager.stop()">⏹️ Stop</button>
+            <button onclick="mockAudioManager.skipToNext()">⏭️ Skip</button>
+            <input type="range" min="0" max="100" value="100" onchange="mockAudioManager.setVolume(this.value/100)" title="Volume">
+            <input type="range" min="50" max="200" value="100" onchange="mockAudioManager.setPlaybackRate(this.value/100)" title="Speed">
+        </div>
+        
+        <div id="testResults"></div>
+    </div>
+
+    <script>
+        // Mock AudioPlaybackManager for testing
+        const mockAudioManager = {
+            isPlaying: false,
+            isPaused: false,
+            playbackQueue: [],
+            currentAudio: null,
+            volume: 1.0,
+            playbackRate: 1.0,
+            
+            async initialize() {
+                console.log('Mock AudioPlaybackManager initialized');
+                return true;
+            },
+            
+            async playText(text, options = {}) {
+                const playbackId = Date.now().toString();
+                console.log('Playing text:', text, 'Options:', options);
+                
+                // Add to queue
+                this.playbackQueue.push({ id: playbackId, text, options });
+                this.updateQueueIndicator();
+                
+                if (!this.isPlaying) {
+                    this.processQueue();
+                }
+                
+                return playbackId;
+            },
+            
+            async processQueue() {
+                if (this.playbackQueue.length === 0) {
+                    this.isPlaying = false;
+                    this.hidePlaybackIndicator();
+                    return;
+                }
+                
+                this.isPlaying = true;
+                const item = this.playbackQueue.shift();
+                this.updateQueueIndicator();
+                
+                await this.playItem(item);
+                
+                // Continue with next item
+                setTimeout(() => this.processQueue(), 100);
+            },
+            
+            async playItem(item) {
+                this.showPlaybackIndicator();
+                updateStatus(`🔊 Playing: "${item.text.substring(0, 50)}..."`);
+                
+                // Simulate audio playback with progress
+                const duration = Math.max(2000, item.text.length * 50); // Simulate duration based on text length
+                const startTime = Date.now();
+                
+                const updateProgress = () => {
+                    if (!this.isPlaying) return;
+                    
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min((elapsed / duration) * 100, 100);
+                    this.updateProgressBar(progress);
+                    
+                    if (progress < 100) {
+                        setTimeout(updateProgress, 100);
+                    } else {
+                        this.hidePlaybackIndicator();
+                        updateStatus('✅ Playback completed');
+                    }
+                };
+                
+                updateProgress();
+                
+                // Simulate async playback
+                return new Promise(resolve => {
+                    setTimeout(resolve, duration);
+                });
+            },
+            
+            showPlaybackIndicator() {
+                document.getElementById('playbackIndicator').style.display = 'flex';
+                document.getElementById('audioControls').style.display = 'flex';
+            },
+            
+            hidePlaybackIndicator() {
+                document.getElementById('playbackIndicator').style.display = 'none';
+                document.getElementById('audioControls').style.display = 'none';
+                this.updateProgressBar(0);
+            },
+            
+            updateProgressBar(progress) {
+                document.getElementById('progressBar').style.width = progress + '%';
+            },
+            
+            updateQueueIndicator() {
+                const indicator = document.getElementById('queueIndicator');
+                if (this.playbackQueue.length > 0) {
+                    indicator.style.display = 'inline-block';
+                    indicator.textContent = `${this.playbackQueue.length} in queue`;
+                } else {
+                    indicator.style.display = 'none';
+                }
+            },
+            
+            pause() {
+                this.isPaused = true;
+                updateStatus('⏸️ Playback paused');
+            },
+            
+            resume() {
+                this.isPaused = false;
+                updateStatus('▶️ Playback resumed');
+            },
+            
+            stop() {
+                this.isPlaying = false;
+                this.isPaused = false;
+                this.playbackQueue = [];
+                this.hidePlaybackIndicator();
+                this.updateQueueIndicator();
+                updateStatus('⏹️ Playback stopped');
+            },
+            
+            skipToNext() {
+                updateStatus('⏭️ Skipped to next');
+                // In real implementation, this would skip current audio
+            },
+            
+            setVolume(volume) {
+                this.volume = volume;
+                updateStatus(`🔊 Volume set to ${Math.round(volume * 100)}%`);
+            },
+            
+            setPlaybackRate(rate) {
+                this.playbackRate = rate;
+                updateStatus(`⚡ Speed set to ${rate.toFixed(1)}x`);
+            },
+            
+            getStatus() {
+                return {
+                    isPlaying: this.isPlaying,
+                    isPaused: this.isPaused,
+                    queueLength: this.playbackQueue.length,
+                    volume: this.volume,
+                    playbackRate: this.playbackRate
+                };
+            }
+        };
+        
+        function updateStatus(message) {
+            document.getElementById('status').textContent = 'Status: ' + message;
+        }
+        
+        async function testBasicPlayback() {
+            updateStatus('Testing basic audio playback...');
+            await mockAudioManager.playText('Hello! This is a test of the audio playback system. The system should play this message and show visual indicators.');
+        }
+        
+        async function testQueueManagement() {
+            updateStatus('Testing queue management...');
+            await mockAudioManager.playText('First message in queue.', { priority: 'normal' });
+            setTimeout(() => mockAudioManager.playText('Second message in queue.'), 500);
+            setTimeout(() => mockAudioManager.playText('Third message in queue.'), 1000);
+            setTimeout(() => mockAudioManager.playText('High priority message!', { priority: 'high' }), 1500);
+        }
+        
+        async function testVoiceToVoice() {
+            updateStatus('Testing voice-to-voice flow...');
+            await mockAudioManager.playText('This simulates a voice-to-voice conversation response. After this plays, the system would automatically be ready for your next voice input in voice-to-voice mode.');
+        }
+        
+        function testControls() {
+            updateStatus('Testing playback controls...');
+            mockAudioManager.showPlaybackIndicator();
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                mockAudioManager.updateProgressBar(progress);
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    mockAudioManager.hidePlaybackIndicator();
+                    updateStatus('Controls test complete');
+                }
+            }, 200);
+        }
+        
+        function testVolumeSpeed() {
+            updateStatus('Testing volume and speed controls...');
+            mockAudioManager.setVolume(0.5);
+            setTimeout(() => mockAudioManager.setVolume(1.0), 1000);
+            setTimeout(() => mockAudioManager.setPlaybackRate(1.5), 2000);
+            setTimeout(() => mockAudioManager.setPlaybackRate(1.0), 3000);
+            setTimeout(() => updateStatus('Volume and speed test complete'), 4000);
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await mockAudioManager.initialize();
+            updateStatus('Mock audio system initialized - ready for testing');
+        });
+        
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { opacity: 1; transform: scale(1); }
+                50% { opacity: 0.6; transform: scale(1.2); }
+                100% { opacity: 1; transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

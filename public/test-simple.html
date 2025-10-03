@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindCare - Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2d1b69 0%, #5b2c6f 100%);
+            min-height: 100vh;
+            color: #e5e7eb;
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #2d1b69 0%, #5b2c6f 100%);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-container {
+            background: linear-gradient(135deg, #1f1937 0%, #2d1b4e 100%);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #c084fc;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .login-header p {
+            color: #9ca3af;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #c084fc;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            background: rgba(30, 41, 59, 0.5);
+            color: #f3f4f6;
+        }
+
+        .form-group input::placeholder {
+            color: #9ca3af;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .main-app {
+            display: none;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .main-app.show {
+            display: block;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #1f1937 0%, #2d1b4e 100%);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .user-info {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-container">
+            <div class="login-header">
+                <h1>🧠 MindCare</h1>
+                <p>Student Mental Health Support</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">Password</label>
+                    <input type="password" id="userPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn">Enter MindCare</button>
+            </form>
+            <div class="register-link">
+                <p>Demo login: Use any email and password to access</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app">
+        <div class="success-message">
+            <h1>🎉 Welcome to MindCare!</h1>
+            <div class="user-info">
+                <h3>User Information</h3>
+                <p><strong>Name:</strong> <span id="currentUserName">Student</span></p>
+                <p><strong>Email:</strong> <span id="currentUserEmail">student@university.edu</span></p>
+            </div>
+            <p>Login successful! You are now in the main application.</p>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <script>
+        console.log('Test page loaded');
+
+        // Login functionality
+        function handleLogin(event) {
+            console.log('handleLogin called');
+            event.preventDefault();
+            
+            const email = document.getElementById('userEmail').value;
+            const password = document.getElementById('userPassword').value;
+            
+            console.log('Email:', email, 'Password length:', password.length);
+            
+            if (email && password) {
+                console.log('Login successful, updating UI');
+                
+                // Update user info
+                document.getElementById('currentUserName').textContent = email.split('@')[0];
+                document.getElementById('currentUserEmail').textContent = email;
+                
+                // Hide login overlay and show main app
+                document.getElementById('loginOverlay').style.display = 'none';
+                document.getElementById('mainApp').classList.add('show');
+                
+                console.log('UI updated successfully');
+            } else {
+                console.log('Email or password missing');
+                alert('Please enter both email and password');
+            }
+        }
+
+        function logout() {
+            console.log('Logout called');
+            // Show login overlay and hide main app
+            document.getElementById('loginOverlay').style.display = 'flex';
+            document.getElementById('mainApp').classList.remove('show');
+            
+            // Clear form
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userPassword').value = '';
+        }
+
+        // Add event listener when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up event listeners');
+            
+            const loginForm = document.getElementById('loginForm');
+            if (loginForm) {
+                loginForm.addEventListener('submit', handleLogin);
+                console.log('Login form event listener added');
+            } else {
+                console.error('Login form not found');
+            }
+        });
+
+        // Test function
+        function testLogin() {
+            document.getElementById('userEmail').value = 'test@example.com';
+            document.getElementById('userPassword').value = 'password123';
+            
+            const event = new Event('submit');
+            handleLogin(event);
+        }
+
+        // Add test button after page loads
+        setTimeout(() => {
+            const testBtn = document.createElement('button');
+            testBtn.textContent = 'Test Login';
+            testBtn.style.position = 'fixed';
+            testBtn.style.top = '10px';
+            testBtn.style.left = '10px';
+            testBtn.style.zIndex = '9999';
+            testBtn.style.padding = '10px';
+            testBtn.style.background = '#22c55e';
+            testBtn.style.color = 'white';
+            testBtn.style.border = 'none';
+            testBtn.style.borderRadius = '5px';
+            testBtn.style.cursor = 'pointer';
+            testBtn.onclick = testLogin;
+            document.body.appendChild(testBtn);
+        }, 1000);
+    </script>
+</body>
+</html>

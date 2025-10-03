@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#8b5cf6">
+    <title>Mobile Test - AarogyaTech</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 100%;
+        }
+        .test-section {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .test-section h3 {
+            color: #c084fc;
+            margin-bottom: 10px;
+        }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .test-button {
+            background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            min-height: 44px;
+            transition: all 0.3s;
+        }
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
+        }
+        .test-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(30, 41, 59, 0.5);
+            color: #f3f4f6;
+            margin-bottom: 10px;
+        }
+        .test-input:focus {
+            outline: none;
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+        }
+        .device-info {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-good { background: #10b981; }
+        .status-warning { background: #f59e0b; }
+        .status-error { background: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>📱 Mobile Optimization Test</h1>
+        
+        <div class="device-info" id="deviceInfo">
+            <h3>Device Information</h3>
+            <div id="deviceDetails">Loading...</div>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator status-good"></span>Responsive Design Test</h3>
+            <p>This page should adapt to your screen size. Try rotating your device or resizing the browser window.</p>
+            <div class="test-grid">
+                <button class="test-button" onclick="testViewport()">Test Viewport</button>
+                <button class="test-button" onclick="testOrientation()">Test Orientation</button>
+                <button class="test-button" onclick="testTouch()">Test Touch</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator" id="inputStatus"></span>Input Test</h3>
+            <p>Test that inputs don't cause zoom on mobile devices:</p>
+            <input type="text" class="test-input" placeholder="Type here - should not zoom on iOS">
+            <input type="email" class="test-input" placeholder="Email input test">
+            <textarea class="test-input" rows="3" placeholder="Textarea test"></textarea>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator" id="touchStatus"></span>Touch Targets</h3>
+            <p>All buttons should be at least 44px for easy tapping:</p>
+            <div class="test-grid">
+                <button class="test-button">Button 1</button>
+                <button class="test-button">Button 2</button>
+                <button class="test-button">Button 3</button>
+                <button class="test-button">Button 4</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator" id="performanceStatus"></span>Performance Test</h3>
+            <p>Testing mobile performance metrics:</p>
+            <div id="performanceResults">
+                <div>Page Load Time: <span id="loadTime">Calculating...</span></div>
+                <div>Memory Usage: <span id="memoryUsage">Calculating...</span></div>
+                <div>Connection Type: <span id="connectionType">Detecting...</span></div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3><span class="status-indicator" id="featuresStatus"></span>Mobile Features</h3>
+            <p>Testing mobile-specific features:</p>
+            <div class="test-grid">
+                <button class="test-button" onclick="testVibration()">Test Vibration</button>
+                <button class="test-button" onclick="testOrientation()">Test Orientation</button>
+                <button class="test-button" onclick="testFullscreen()">Test Fullscreen</button>
+                <button class="test-button" onclick="testShare()">Test Share</button>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>Navigation Test</h3>
+            <p>Test navigation to main app:</p>
+            <div class="test-grid">
+                <button class="test-button" onclick="window.location.href='index.html'">Go to Main App</button>
+                <button class="test-button" onclick="window.location.href='admin-dashboard.html'">Go to Admin</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Device information
+        function updateDeviceInfo() {
+            const info = {
+                'Screen Size': `${screen.width}x${screen.height}`,
+                'Viewport': `${window.innerWidth}x${window.innerHeight}`,
+                'Device Pixel Ratio': window.devicePixelRatio,
+                'User Agent': navigator.userAgent.substring(0, 50) + '...',
+                'Touch Support': 'ontouchstart' in window ? 'Yes' : 'No',
+                'Orientation': screen.orientation ? screen.orientation.type : 'Unknown',
+                'Connection': navigator.connection ? navigator.connection.effectiveType : 'Unknown'
+            };
+
+            const detailsDiv = document.getElementById('deviceDetails');
+            detailsDiv.innerHTML = Object.entries(info)
+                .map(([key, value]) => `<div><strong>${key}:</strong> ${value}</div>`)
+                .join('');
+        }
+
+        // Test functions
+        function testViewport() {
+            alert(`Viewport: ${window.innerWidth}x${window.innerHeight}\nScreen: ${screen.width}x${screen.height}`);
+        }
+
+        function testOrientation() {
+            if (screen.orientation) {
+                alert(`Orientation: ${screen.orientation.type}\nAngle: ${screen.orientation.angle}°`);
+            } else {
+                alert('Orientation API not supported');
+            }
+        }
+
+        function testTouch() {
+            const touchSupport = 'ontouchstart' in window;
+            const maxTouchPoints = navigator.maxTouchPoints || 0;
+            alert(`Touch Support: ${touchSupport}\nMax Touch Points: ${maxTouchPoints}`);
+        }
+
+        function testVibration() {
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+                alert('Vibration test completed!');
+            } else {
+                alert('Vibration API not supported');
+            }
+        }
+
+        function testFullscreen() {
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else {
+                alert('Fullscreen API not supported');
+            }
+        }
+
+        function testShare() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'AarogyaTech Mobile Test',
+                    text: 'Testing mobile features',
+                    url: window.location.href
+                });
+            } else {
+                alert('Web Share API not supported');
+            }
+        }
+
+        // Performance monitoring
+        function updatePerformance() {
+            // Load time
+            const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+            document.getElementById('loadTime').textContent = loadTime + 'ms';
+
+            // Memory usage (if available)
+            if (performance.memory) {
+                const memory = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
+                document.getElementById('memoryUsage').textContent = memory + 'MB';
+            } else {
+                document.getElementById('memoryUsage').textContent = 'Not available';
+            }
+
+            // Connection type
+            if (navigator.connection) {
+                document.getElementById('connectionType').textContent = navigator.connection.effectiveType;
+            } else {
+                document.getElementById('connectionType').textContent = 'Not available';
+            }
+        }
+
+        // Status indicators
+        function updateStatusIndicators() {
+            // Input status
+            const inputStatus = document.getElementById('inputStatus');
+            const hasProperFontSize = Array.from(document.querySelectorAll('.test-input'))
+                .every(input => parseFloat(getComputedStyle(input).fontSize) >= 16);
+            inputStatus.className = `status-indicator ${hasProperFontSize ? 'status-good' : 'status-warning'}`;
+
+            // Touch status
+            const touchStatus = document.getElementById('touchStatus');
+            const hasProperTouchTargets = Array.from(document.querySelectorAll('.test-button'))
+                .every(btn => btn.offsetHeight >= 44 && btn.offsetWidth >= 44);
+            touchStatus.className = `status-indicator ${hasProperTouchTargets ? 'status-good' : 'status-warning'}`;
+
+            // Performance status
+            const performanceStatus = document.getElementById('performanceStatus');
+            const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+            performanceStatus.className = `status-indicator ${loadTime < 3000 ? 'status-good' : 'status-warning'}`;
+
+            // Features status
+            const featuresStatus = document.getElementById('featuresStatus');
+            const hasModernFeatures = 'ontouchstart' in window && navigator.userAgent.includes('Mobile');
+            featuresStatus.className = `status-indicator ${hasModernFeatures ? 'status-good' : 'status-warning'}`;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDeviceInfo();
+            setTimeout(updatePerformance, 1000);
+            setTimeout(updateStatusIndicators, 1500);
+        });
+
+        // Update on orientation change
+        window.addEventListener('orientationchange', function() {
+            setTimeout(updateDeviceInfo, 500);
+        });
+
+        // Update on resize
+        window.addEventListener('resize', function() {
+            updateDeviceInfo();
+        });
+    </script>
+</body>
+</html>
